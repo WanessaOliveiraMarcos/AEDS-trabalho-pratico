@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Compilar código C",
+      "type": "shell",
+      "command": "C:/TDM-GCC-64/bin/gcc.exe",
+      "args": [
+        "-Wall",
+        "-Wextra",
+        "-g",
+        "-mconsole",
+        "${file}",
+        "-o",
+        "${fileDirname}/output/${fileBasenameNoExtension}.exe"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "detail": "Compilando código C com TDM-GCC"
+    }
+  ]
+}
