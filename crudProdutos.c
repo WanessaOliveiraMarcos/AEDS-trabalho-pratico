@@ -127,7 +127,6 @@ void alterarProdutos() {
     bool produtoEncontrado = false;
     Produtos produto;
     Produtos tempProduto;
-    char separador[100];
 
     printf("Digite o código do produto que deseja alterar: ");
     scanf("%d", &codigo);
@@ -193,7 +192,6 @@ void alterarProdutos() {
     }
 }
 void consultarTodosProdutos(){
-    char separador[100];
     char nome[50];
     int codigoArquivo, quantidade;
     float preco;
@@ -297,7 +295,6 @@ void cadastrarProdutos(){
 
         printf("\nQuer cadastrar mais produtos? SIM=1 NAO=2: ");
         scanf("%d", &resposta);
-        //getchar();
 
     }while(resposta == 1 && i < MAX_TAMANHO_PRODUTOS);
     if(i >= MAX_TAMANHO_PRODUTOS){
