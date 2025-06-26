@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
-#define MAX_TAMANHO_COMPRADORES
+#define MAX_TAMANHO_COMPRADORES 100
 #define MAX_TAMANHO_NOME 50
 #define MAX_TAMANHO_CPF 15
 #define MAX_TAMANHO_EMAIL 50
@@ -27,10 +27,13 @@ typedef struct {
 
 // Declaração de Funções
 int carregarNumeroDeCompradores(Comprador compradores[]) {
-    FILE *arquivo = fopen("dados_comprador.txt", "r");
+    FILE *arquivo = fopen("dados_compradores.txt", "r");
     int i = 0;
 
-    if (arquivo == NULL) return 0;
+    if (arquivo == NULL) {
+        perror("Erro ao abrir o arquivo");
+        return 0;
+    }
 
     while (
         fscanf(arquivo, "Nome: %[^\n]\n", compradores[i].nome) == 1 &&
@@ -40,25 +43,15 @@ int carregarNumeroDeCompradores(Comprador compradores[]) {
         fscanf(arquivo, "Bairro: %[^\n]\n", compradores[i].endereco.bairro) == 1 &&
         fscanf(arquivo, "Cidade: %[^\n]\n", compradores[i].endereco.cidade) == 1 &&
         fscanf(arquivo, "Estado: %[^\n]\n", compradores[i].endereco.estado) == 1 &&
-        fscanf(arquivo, "CEP: %[^\n]\n", compradores[i].endereco.cep) == 1) {
+        fscanf(arquivo, "CEP: %[^\n]\n", compradores[i].endereco.cep) == 1
+    ) {
         i++;
-        if (i >= MAX_TAMANHO_COMPRADORES) {
-            break;
-        }
     }
 
-
     fclose(arquivo);
-    return i; // número de compradores carregados
+    return i;
 }
-int desejaContinuar(){
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
-    int resposta;
-    printf("\nQuer cadastrar mais compradores? SIM=1 NAO=2: ");
-    scanf("%d", &resposta);
-    return resposta;
-}
+
 int cadastrarCompradores(){
     int resposta, codigo;
     bool verificaCodigo = false;
@@ -66,6 +59,7 @@ int cadastrarCompradores(){
     Comprador compradores[MAX_TAMANHO_COMPRADORES];
     arquivo = fopen("dados_compradores.txt", "a");
     int i = carregarNumeroDeCompradores(compradores);
+    printf("Numero de compradores total: %d", i);
     if (arquivo == NULL) {
         perror("Erro ao abrir o arquivo");
         return 1;
@@ -129,13 +123,10 @@ int cadastrarCompradores(){
         fprintf(arquivo, "CEP: %s\n", compradores[i].endereco.cep);
 
         i++;
-        resposta = desejaContinuar();
+        printf("\nQuer cadastrar mais compradores? SIM=1 NAO=2: ");
+        scanf("%d", &resposta);
 
-    }while(resposta == 1 && i < MAX_TAMANHO_COMPRADORES);
-    if(i >= MAX_TAMANHO_COMPRADORES){
-        printf("O numero de produtos cadastrados excedeu o limite de %d", MAX_TAMANHO_COMPRADORES);
-        return 1;
-    }
+    }while(resposta == 1);
 
     // fecha o arquivo
     fclose(arquivo);
@@ -176,6 +167,194 @@ void consultarTodosCompradores(){
     fclose(arquivo);
 }
 
+void alterarProdutos() {
+    char nomePesquisado[MAX_TAMANHO_NOME];
+    bool compradorEncontrado = false;
+    int total = 0, i=0;
+    Comprador tempComprador;
+    Comprador comprador;
+    FILE *arquivo, *temp_compradores;
+    arquivo = fopen("dados_compradores.txt", "r");
+    temp_compradores = fopen("temp_compradores.txt", "w");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return;
+    }
+    printf("Informe o nome do comprador que deseja editar: ");
+
+    // limpa o buffer antes de fgets
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    fgets(nomePesquisado, sizeof(nomePesquisado), stdin);
+    // remove o '\n' se estiver presente
+    nomePesquisado[strcspn(nomePesquisado, "\n")] = 0;
+
+    while (fscanf(arquivo, "Nome: %[^\n]\n", tempComprador.nome) == 1 &&
+            fscanf(arquivo, "CPF: %[^\n]\n", tempComprador.cpf) == 1 &&
+            fscanf(arquivo, "Email: %[^\n]\n", tempComprador.email) == 1 &&
+            fscanf(arquivo, "Rua: %[^\n]\n", tempComprador.endereco.rua) == 1 &&
+            fscanf(arquivo, "Bairro: %[^\n]\n", tempComprador.endereco.bairro) == 1 &&
+            fscanf(arquivo, "Cidade: %[^\n]\n", tempComprador.endereco.cidade) == 1 &&
+            fscanf(arquivo, "Estado: %[^\n]\n", tempComprador.endereco.estado) == 1 &&
+            fscanf(arquivo, "CEP: %[^\n]\n", tempComprador.endereco.cep) == 1 ) {
+        if (strcmp(nomePesquisado, tempComprador.nome) == 0) {
+            compradorEncontrado = true;
+            // mostrar dados atuais
+            printf("Comprador Encontrado!\n");
+            printf("Nome: %s\n", tempComprador.nome);
+            printf("CPF: %s\n", tempComprador.cpf);
+            printf("Email: %s\n", tempComprador.email);
+            printf("Rua: %s\n", tempComprador.endereco.rua);
+            printf("Bairro: %s\n", tempComprador.endereco.bairro);
+            printf("Cidade: %s\n", tempComprador.endereco.cidade);
+            printf("CEP: %s\n", tempComprador.endereco.cep);
+            printf("Estado: %s\n", tempComprador.endereco.estado);
+
+            // pega os novos dados do comprador encontrado
+            printf("Digite o nome: ");
+            fgets(comprador.nome, sizeof(comprador.nome), stdin);
+            // remove o '\n' se estiver presente
+            comprador.nome[strcspn(comprador.nome, "\n")] = 0;
+            printf("Digite o CPF do comprador (sem pontos): ");
+            fgets(comprador.cpf, sizeof(comprador.cpf), stdin);
+            // remove o '\n' se estiver presente
+            comprador.cpf[strcspn(comprador.cpf, "\n")] = 0;
+
+
+            printf("Digite o email: ");
+            fgets(comprador.email, sizeof(comprador.email), stdin);
+            // remove o '\n' se estiver presente
+            comprador.email[strcspn(comprador.email, "\n")] = 0;
+
+            printf("Digite a Rua: ");
+            fgets(comprador.endereco.rua, sizeof(comprador.endereco.rua), stdin);
+            // remove o '\n' se estiver presente
+            comprador.endereco.rua[strcspn(comprador.endereco.rua, "\n")] = 0;
+
+            printf("Digite a Bairro: ");
+            fgets(comprador.endereco.bairro, sizeof(comprador.endereco.bairro), stdin);
+            // remove o '\n' se estiver presente
+            comprador.endereco.bairro[strcspn(comprador.endereco.bairro, "\n")] = 0;
+
+            printf("Digite a Cidade: ");
+            fgets(comprador.endereco.cidade, sizeof(comprador.endereco.cidade), stdin);
+            // remove o '\n' se estiver presente
+            comprador.endereco.cidade[strcspn(comprador.endereco.cidade, "\n")] = 0;
+
+            printf("Digite a CEP: ");
+            fgets(comprador.endereco.cep, sizeof(comprador.endereco.cep), stdin);
+            // remove o '\n' se estiver presente
+            comprador.endereco.cep[strcspn(comprador.endereco.cep, "\n")] = 0;
+
+            printf("Digite a Estado:");
+            fgets(comprador.endereco.estado, sizeof(comprador.endereco.estado), stdin);
+            // remove o '\n' se estiver presente
+            comprador.endereco.estado[strcspn(comprador.endereco.estado, "\n")] = 0;
+            fprintf(temp_compradores, "Nome: %s\n", comprador.nome);
+            fprintf(temp_compradores, "CPF: %s\n", comprador.cpf);
+            fprintf(temp_compradores, "Email: %s\n", comprador.email);
+            fprintf(temp_compradores, "Rua: %s\n", comprador.endereco.rua);
+            fprintf(temp_compradores, "Bairro: %s\n", comprador.endereco.bairro);
+            fprintf(temp_compradores, "Cidade: %s\n", comprador.endereco.cidade);
+            fprintf(temp_compradores, "Estado: %s\n", comprador.endereco.estado);
+            fprintf(temp_compradores, "CEP: %s\n", comprador.endereco.cep);
+            break;
+        } else {
+            fprintf(temp_compradores, "Nome: %s\n", tempComprador.nome);
+            fprintf(temp_compradores, "CPF: %s\n", tempComprador.cpf);
+            fprintf(temp_compradores, "Email: %s\n", tempComprador.email);
+            fprintf(temp_compradores, "Rua: %s\n", tempComprador.endereco.rua);
+            fprintf(temp_compradores, "Bairro: %s\n", tempComprador.endereco.bairro);
+            fprintf(temp_compradores, "Cidade: %s\n", tempComprador.endereco.cidade);
+            fprintf(temp_compradores, "Estado: %s\n", tempComprador.endereco.estado);
+            fprintf(temp_compradores, "CEP: %s\n", tempComprador.endereco.cep);
+        }
+    }
+
+    fclose(arquivo);
+    fclose(temp_compradores);
+    if (compradorEncontrado) {
+        // substitui o arquivo original pelo arquivo temporário
+        remove("dados_compradores.txt");
+        rename("temp_compradores.txt", "dados_compradores.txt");
+        printf("\nComprador alterado com sucesso!\n");
+    } else {
+        remove("temp_compradores.txt");
+        printf("\nComprador nao encontrado!.\n");
+    }
+    printf("Comprador alterado.\n");
+}
+
+void excluirComprador(){
+    char nomePesquisado[MAX_TAMANHO_NOME];
+    bool compradorEncontrado = false;
+    int total = 0, i=0;
+    Comprador tempComprador;
+    Comprador comprador;
+    FILE *arquivo, *temp_compradores;
+    arquivo = fopen("dados_compradores.txt", "r");
+    temp_compradores = fopen("temp_compradores.txt", "w");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return;
+    }
+    printf("Informe o nome do comprador que deseja excluir: ");
+
+    // limpa o buffer antes de fgets
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    fgets(nomePesquisado, sizeof(nomePesquisado), stdin);
+    // remove o '\n' se estiver presente
+    nomePesquisado[strcspn(nomePesquisado, "\n")] = 0;
+
+    while (fscanf(arquivo, "Nome: %[^\n]\n", tempComprador.nome) == 1 &&
+            fscanf(arquivo, "CPF: %[^\n]\n", tempComprador.cpf) == 1 &&
+            fscanf(arquivo, "Email: %[^\n]\n", tempComprador.email) == 1 &&
+            fscanf(arquivo, "Rua: %[^\n]\n", tempComprador.endereco.rua) == 1 &&
+            fscanf(arquivo, "Bairro: %[^\n]\n", tempComprador.endereco.bairro) == 1 &&
+            fscanf(arquivo, "Cidade: %[^\n]\n", tempComprador.endereco.cidade) == 1 &&
+            fscanf(arquivo, "Estado: %[^\n]\n", tempComprador.endereco.estado) == 1 &&
+            fscanf(arquivo, "CEP: %[^\n]\n", tempComprador.endereco.cep) == 1 ) {
+        if (!(strcmp(nomePesquisado, tempComprador.nome) == 0)) {
+            fprintf(temp_compradores, "Nome: %s\n", tempComprador.nome);
+            fprintf(temp_compradores, "CPF: %s\n", tempComprador.cpf);
+            fprintf(temp_compradores, "Email: %s\n", tempComprador.email);
+            fprintf(temp_compradores, "Rua: %s\n", tempComprador.endereco.rua);
+            fprintf(temp_compradores, "Bairro: %s\n", tempComprador.endereco.bairro);
+            fprintf(temp_compradores, "Cidade: %s\n", tempComprador.endereco.cidade);
+            fprintf(temp_compradores, "Estado: %s\n", tempComprador.endereco.estado);
+            fprintf(temp_compradores, "CEP: %s\n", tempComprador.endereco.cep);
+            break;
+        } else {
+            // mostrar dados atuais
+            printf("Comprador Encontrado!\n");
+            printf("Nome: %s\n", tempComprador.nome);
+            printf("CPF: %s\n", tempComprador.cpf);
+            printf("Email: %s\n", tempComprador.email);
+            printf("Rua: %s\n", tempComprador.endereco.rua);
+            printf("Bairro: %s\n", tempComprador.endereco.bairro);
+            printf("Cidade: %s\n", tempComprador.endereco.cidade);
+            printf("CEP: %s\n", tempComprador.endereco.cep);
+            printf("Estado: %s\n", tempComprador.endereco.estado);
+            compradorEncontrado = true;
+        }
+    }
+
+    fclose(arquivo);
+    fclose(temp_compradores);
+    if (compradorEncontrado) {
+        // substitui o arquivo original pelo arquivo temporário
+        remove("dados_compradores.txt");
+        rename("temp_compradores.txt", "dados_compradores.txt");
+        printf("\nComprador excluido com sucesso!\n");
+    } else {
+        remove("temp_compradores.txt");
+        printf("\nComprador nao encontrado!.\n");
+    }
+}
+
 int main(int argc, char ** argv)
 {
     int opcao = 0;
@@ -197,15 +376,12 @@ int main(int argc, char ** argv)
                 consultarTodosCompradores();
                 break;
             case 3:
-                //consultarTodosCompradores();
+                alterarProdutos();
                 break;
             case 4:
-                //alterarComprador();
+                 excluirComprador();
                 break;
             case 5:
-                //excluirComprador();
-                break;
-            case 6:
                 printf("Encerrando o programa...\n");
                 break;
             default:
