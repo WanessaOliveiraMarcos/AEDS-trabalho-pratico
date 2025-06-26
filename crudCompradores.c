@@ -167,7 +167,7 @@ void consultarTodosCompradores(){
     fclose(arquivo);
 }
 
-void alterarProdutos() {
+void alterarCompradores() {
     char nomePesquisado[MAX_TAMANHO_NOME];
     bool compradorEncontrado = false;
     int total = 0, i=0;
@@ -376,7 +376,7 @@ int main(int argc, char ** argv)
                 consultarTodosCompradores();
                 break;
             case 3:
-                alterarProdutos();
+                alterarCompradores();
                 break;
             case 4:
                  excluirComprador();
