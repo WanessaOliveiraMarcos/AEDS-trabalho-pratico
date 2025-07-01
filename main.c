@@ -128,6 +128,7 @@ int CodigoAleatorio()
     return codigo;
 }
 
+// Função para saber quantos compradores já foram registrados
 int carregarNumeroDeCompradores(Comprador compradores[]) {
     FILE *arquivo = fopen("dados_compradores.txt", "r");
     int i = 0;
@@ -153,7 +154,133 @@ int carregarNumeroDeCompradores(Comprador compradores[]) {
     fclose(arquivo);
     return i;
 }
+// Função para saber quantos produtos já foram registrados
+int carregarProdutos(Produtos produtos[]) {
+    FILE *arquivo = fopen("dados_produtos.txt", "r");
+    int i = 0;
 
+    if (arquivo == NULL) return 0;
+
+    while (fscanf(arquivo, "Nome: %[^\n]\n", produtos[i].nome) == 1 &&
+           fscanf(arquivo, "Codigo: %d\n", &produtos[i].codigo) == 1 &&
+           fscanf(arquivo, "Quantidade: %d\n", &produtos[i].quantidadeEstoque) == 1 &&
+           fscanf(arquivo, "Preco: %f\n", &produtos[i].preco) == 1) {
+        i++;
+        if (i >= MAX_TAMANHO_PRODUTOS){
+          break;
+        }
+    }
+
+    fclose(arquivo);
+    return i; // número de produtos carregados
+}
+
+// Verifica se todos os campos do Cadastro de Compradores foram preenchidos
+int verificarCamposCompradores(Comprador *comprador){
+    if (strlen(comprador->nome) == 0) {
+        printf("Campo 'nome' nao esta preenchido\n");
+        return 0;
+    }
+
+    if (strlen(comprador->cpf) == 0) {
+        printf("Campo 'cpf' nao esta preenchido\n");
+        return 0;
+    }
+
+    if (strlen(comprador->email) == 0) {
+        printf("Campo 'email' nao esta preenchido\n");
+        return 0;
+    }
+
+    if (strlen(comprador->endereco.rua) == 0) {
+        printf("Campo 'rua' nao esta preenchido\n");
+        return 0;
+    }
+
+    if (strlen(comprador->endereco.bairro) == 0) {
+        printf("\nCampo 'bairro' nao esta preenchido\n");
+        return 0;
+    }
+
+    if (strlen(comprador->endereco.cidade) == 0) {
+        printf("\nCampo 'cidade' nao esta preenchido\n");
+        return 0;
+    }
+
+    if (strlen(comprador->endereco.estado) == 0) {
+        printf("\nCampo 'estado' nao esta preenchido\n");
+        return 0;
+    }
+
+    if (strlen(comprador->endereco.cep) == 0) {
+        printf("\nCampo 'cep' nao esta preenchido\n");
+        return 0;
+    }
+    return 1;
+}
+// Verifica se todos os campos do Cadastro de Produtos foram preenchidos
+int verificarCamposProdutos(Produtos *produto){
+    if (strlen(produto->nome) == 0) {
+        printf("Campo 'nome' nao esta preenchido\n");
+        return 0;
+    }
+
+    if (produto->quantidadeEstoque < 0) {
+        printf("Campo 'quantidade estoque' nao pode ser negativo\n");
+        return 0;
+    }
+
+    if (produto->preco < 0) {
+        printf("Campo 'preco' nao pode ser negativo\n");
+        return 0;
+    }
+
+    return 1;
+}
+
+// Verifica se todos os campos do Cadastro de Vendedores foram preenchidos
+int verificarCamposVendedores(Vendedor *vendedor){
+    if (strlen(vendedor->nome) == 0) {
+        printf("Campo 'nome' nao esta preenchido\n");
+        return 0;
+    }
+
+    if (vendedor->numero < 0) {
+        printf("Campo 'numero' nao pode ser negativo\n");
+        return 0;
+    }
+
+    if (vendedor->salario < 0) {
+        printf("Campo 'salario' nao pode ser negativo\n");
+        return 0;
+    }
+
+    if (vendedor->comissao < 0) {
+        printf("Campo 'comissao' nao pode ser negativo\n");
+        return 0;
+    }
+    return 1;
+}
+
+// Verifica se todos os campos do Cadastro de Vendas foram preenchidos
+int verificarCamposVendas(Venda *venda){
+    if (strlen(venda->data) == 0) {
+        printf("Campo 'data' nao esta preenchido\n");
+        return 0;
+    }
+
+    if (venda->numeroVendedor < 0) {
+        printf("Campo 'numero do vendedor' nao pode ser negativo\n");
+        return 0;
+    }
+
+    if (venda->valor < 0) {
+        printf("Campo 'venda' nao pode ser negativo\n");
+        return 0;
+    }
+
+    return 1;
+}
 /* * * * * * * * * * * * * * * * * * *
 *  Funções do CRUD dos Compradores   *
 * * * * * * * * * * * * * * * * * * */
@@ -217,18 +344,22 @@ int cadastrarCompradores(){
         fgets(compradores[i].endereco.estado, sizeof(compradores[i].endereco.estado), stdin);
         // remove o '\n' se estiver presente
         compradores[i].endereco.estado[strcspn(compradores[i].endereco.estado, "\n")] = 0;
-
-         // Escreve os dados no arquivo
-        fprintf(arquivo, "Nome: %s\n", compradores[i].nome);
-        fprintf(arquivo, "CPF: %s\n", compradores[i].cpf);
-        fprintf(arquivo, "Email: %s\n", compradores[i].email);
-        fprintf(arquivo, "Rua: %s\n", compradores[i].endereco.rua);
-        fprintf(arquivo, "Bairro: %s\n", compradores[i].endereco.bairro);
-        fprintf(arquivo, "Cidade: %s\n", compradores[i].endereco.cidade);
-        fprintf(arquivo, "Estado: %s\n", compradores[i].endereco.estado);
-        fprintf(arquivo, "CEP: %s\n", compradores[i].endereco.cep);
-
-        i++;
+        int verificarCampos = verificarCamposCompradores(&compradores[i]);
+        if(verificarCampos == 1){
+             // Escreve os dados no arquivo
+            fprintf(arquivo, "Nome: %s\n", compradores[i].nome);
+            fprintf(arquivo, "CPF: %s\n", compradores[i].cpf);
+            fprintf(arquivo, "Email: %s\n", compradores[i].email);
+            fprintf(arquivo, "Rua: %s\n", compradores[i].endereco.rua);
+            fprintf(arquivo, "Bairro: %s\n", compradores[i].endereco.bairro);
+            fprintf(arquivo, "Cidade: %s\n", compradores[i].endereco.cidade);
+            fprintf(arquivo, "Estado: %s\n", compradores[i].endereco.estado);
+            fprintf(arquivo, "CEP: %s\n", compradores[i].endereco.cep);
+            i++;
+            printf("\nComprador cadastrado com sucesso!");
+        } else{
+           printf("\nNao foi possivel cadastrar o comprador!");
+        }
         printf("\nQuer cadastrar mais compradores? SIM=1 NAO=2: ");
         scanf("%d", &resposta);
 
@@ -465,26 +596,6 @@ void excluirComprador(){
 *    Funções do CRUD dos Produtos  *
 * * * * * * * * * * * * * * * * * * */
 
-int carregarProdutos(Produtos produtos[]) {
-    FILE *arquivo = fopen("dados_produtos.txt", "r");
-    int i = 0;
-
-    if (arquivo == NULL) return 0;
-
-    while (fscanf(arquivo, "Nome: %[^\n]\n", produtos[i].nome) == 1 &&
-           fscanf(arquivo, "Codigo: %d\n", &produtos[i].codigo) == 1 &&
-           fscanf(arquivo, "Quantidade: %d\n", &produtos[i].quantidadeEstoque) == 1 &&
-           fscanf(arquivo, "Preco: %f\n", &produtos[i].preco) == 1) {
-        i++;
-        if (i >= MAX_TAMANHO_PRODUTOS){
-          break;
-        }
-    }
-
-    fclose(arquivo);
-    return i; // número de produtos carregados
-}
-
 void excluirProduto(){
     FILE *arquivo = fopen("dados_produtos.txt", "r");
     FILE *temp = fopen("temp.txt", "w");
@@ -705,12 +816,18 @@ void cadastrarProdutos(){
 
         produtos[i].codigo = codigo;
 
-        // Escreve os dados no arquivo
-        fprintf(arquivo, "Nome: %s\n", produtos[i].nome);
-        fprintf(arquivo, "Codigo: %d\n", produtos[i].codigo);
-        fprintf(arquivo, "Quantidade: %d\n", produtos[i].quantidadeEstoque);
-        fprintf(arquivo, "Preco: %.2f\n", produtos[i].preco);
-        i++;
+        int verificarCampos = verificarCamposProdutos(&produtos[i]);
+        if(verificarCampos == 1){
+            // Escreve os dados no arquivo
+            fprintf(arquivo, "Nome: %s\n", produtos[i].nome);
+            fprintf(arquivo, "Codigo: %d\n", produtos[i].codigo);
+            fprintf(arquivo, "Quantidade: %d\n", produtos[i].quantidadeEstoque);
+            fprintf(arquivo, "Preco: %.2f\n", produtos[i].preco);
+            i++;
+            printf("\nProduto cadastrado com sucesso!");
+        }else{
+            printf("\nProduto nao cadastrado!");
+        }
 
         printf("\nQuer cadastrar mais produtos? SIM=1 NAO=2: ");
         scanf("%d", &resposta);
@@ -758,10 +875,14 @@ void cadastrarVendedor() {
     getchar();
 
     v.comissao = 0;
-
-    fprintf(arquivo, "%s,%d,%.2f,%.2f\n", v.nome, v.numero, v.salario, v.comissao);
+    int verificaCampos = verificarCamposVendedores(&v);
+    if(verificaCampos == 1){
+         fprintf(arquivo, "%s,%d,%.2f,%.2f\n", v.nome, v.numero, v.salario, v.comissao);
+         printf("\nVendedor cadastrado com sucesso!");
+    }else{
+        printf("Nao foi possivel cadastrar o Vendedor!");
+    }
     fclose(arquivo);
-    printf("Vendedor cadastrado.\n");
 }
 
 void listarVendedores() {
@@ -771,7 +892,7 @@ void listarVendedores() {
     Vendedor v;
     printf("\nLista de Vendedores:\n");
     while (fscanf(arquivo, "%[^,],%d,%f,%f\n", v.nome, &v.numero, &v.salario, &v.comissao) != EOF) {
-        printf("Nome: %s | Número: %d | Salário: %.2f | Comissão: %.2f\n", v.nome, v.numero, v.salario, v.comissao);
+        printf("Nome: %s | Numero: %d | Salario: %.2f | Comissao: %.2f\n", v.nome, v.numero, v.salario, v.comissao);
     }
     fclose(arquivo);
 }
@@ -788,7 +909,7 @@ void alterarVendedor() {
     }
     fclose(arquivo);
 
-    printf("Informe o número do vendedor a alterar: ");
+    printf("Informe o numero do vendedor a alterar: ");
     scanf("%d", &numero);
     getchar();
 
@@ -797,7 +918,7 @@ void alterarVendedor() {
             printf("Novo nome: ");
             fgets(lista[i].nome, 50, stdin);
             lista[i].nome[strcspn(lista[i].nome, "\n")] = 0;
-            printf("Novo salário: ");
+            printf("Novo salario: ");
             scanf("%f", &lista[i].salario);
             getchar();
             encontrado = 1;
@@ -806,7 +927,7 @@ void alterarVendedor() {
     }
 
     if (!encontrado) {
-        printf("Vendedor não encontrado.\n");
+        printf("Vendedor nao encontrado.\n");
         return;
     }
 
@@ -845,9 +966,9 @@ void excluirVendedor() {
     fclose(arquivo);
 
     if (encontrado)
-        printf("Vendedor excluído.\n");
+        printf("Vendedor excluido.\n");
     else
-        printf("Vendedor não encontrado.\n");
+        printf("Vendedor nao encontrado.\n");
 }
 
 /* * * * * * * * * * * * * * * * * * *
@@ -871,8 +992,13 @@ void cadastrarVenda() {
     printf("Data da venda (dd/mm/aaaa): ");
     fgets(v.data, 11, stdin);
     v.data[strcspn(v.data, "\n")] = 0;
-
-    fprintf(arquivo, "%d,%.2f,%s\n", v.numeroVendedor, v.valor, v.data);
+    int verificaCampos = verificarCamposVendas(&v);
+    if(verificaCampos == 1){
+        fprintf(arquivo, "%d,%.2f,%s\n", v.numeroVendedor, v.valor, v.data);
+        printf("\nVenda Cadastrada com sucesso!");
+    }else{
+        printf("\nNao foi possivel cadastrar essa venda!");
+    }
     fclose(arquivo);
     printf("Venda registrada com sucesso.\n");
 }
