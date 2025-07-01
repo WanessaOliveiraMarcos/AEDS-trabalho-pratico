@@ -1,3 +1,21 @@
+/********************************************************
+* FILENAME    : main.c
+* DESCRIPTION : implementa um sistema e-commerce, com ge-
+*               renciamento de produtos, vendas, compra-
+*               dores e vendedores.
+* PUBLIC FUNCTIONS :
+* [tipo_retorno] NomeFuncao1( argumentos )
+* [tipo_retorno] NomeFuncao2( argumentos )
+* NOTES :
+* Este sistema foi desenvolvido para fins acadêmicos das
+* disciplinas de Fundamentos da Engenharia de Software e
+* Algoritmos e Estruturas de Dados
+*
+* AUTHORS     : Wanessa de Oliveira Marcos, Julya Ketly Oli
+*               veira Gandra,
+* START DATE  : 22 de Julho de 2025
+********************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -19,7 +37,10 @@
 #define ARQUIVO_VENDEDORES "vendedores.txt"
 #define SUCESSO 0
 
-// Declaração dos Dados
+/* * * * * * * * * * * * * * * * * * *
+* Declaração das Estruturas de Dados *
+* * * * * * * * * * * * * * * * * * */
+
 typedef struct Produtos{
     char nome[50];
     int codigo;
@@ -51,7 +72,10 @@ typedef struct {
     char data[11]; // "dd/mm/aaaa"
 } Venda;
 
-// Declaração de Funções
+/* * * * * * * * * * * * * * * * * * * *
+*       Declaração das Funções         *
+* * * * * * * * * * * * * * * * * * * */
+
  void freteAteCemReais(float valorCompra){
      int frete=30;
      printf("\n----------------\n");
@@ -129,6 +153,10 @@ int carregarNumeroDeCompradores(Comprador compradores[]) {
     fclose(arquivo);
     return i;
 }
+
+/* * * * * * * * * * * * * * * * * * *
+*  Funções do CRUD dos Compradores   *
+* * * * * * * * * * * * * * * * * * */
 
 int cadastrarCompradores(){
     int resposta, codigo;
@@ -433,6 +461,10 @@ void excluirComprador(){
     }
 }
 
+/* * * * * * * * * * * * * * * * * * *
+*    Funções do CRUD dos Produtos  *
+* * * * * * * * * * * * * * * * * * */
+
 int carregarProdutos(Produtos produtos[]) {
     FILE *arquivo = fopen("dados_produtos.txt", "r");
     int i = 0;
@@ -693,6 +725,10 @@ void cadastrarProdutos(){
     fclose(arquivo);
 }
 
+/* * * * * * * * * * * * * * * * * * *
+*   Funções do CRUD dos Vendedores   *
+* * * * * * * * * * * * * * * * * * */
+
 void cadastrarVendedor() {
     FILE *arquivo = fopen(ARQUIVO_VENDEDORES, "a+");
     if (arquivo == NULL) return;
@@ -813,6 +849,10 @@ void excluirVendedor() {
     else
         printf("Vendedor não encontrado.\n");
 }
+
+/* * * * * * * * * * * * * * * * * * *
+*     Funções do CRUD das Vendas     *
+* * * * * * * * * * * * * * * * * * */
 
 void cadastrarVenda() {
     FILE *arquivo = fopen(ARQUIVO_VENDAS, "a+");
@@ -1145,6 +1185,11 @@ void menuVendas(){
         }
     } while (opcao != 5);
 }
+
+/* * * * * * * * * * * * * * * * * * *
+*       Programa Principal           *
+* * * * * * * * * * * * * * * * * * */
+
 int main(int argc, char **argv) {
     int opcao = 0;
     do {
