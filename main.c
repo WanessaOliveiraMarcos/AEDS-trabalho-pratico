@@ -112,18 +112,29 @@ void freteAcimaTrezentos(float valorCompra){
     printf("\n----------------\n");
 }
 // funçaõ que verifica se o código do produto já existe
-bool verificarCodigo(int codigo, Produtos *produtos) {
+bool verificarCodigoProduto(int codigo, Produtos *produtos) {
     FILE *arquivo = fopen("dados_produtos.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo!\n");
         return false;
     }
 
+    char nome[MAX_TAMANHO_NOME];
+    int codigoArquivo, quantidade;
+    float preco;
     int i = 0;
 
-    while (!feof(arquivo)) {
-        fscanf(arquivo, "%s %d %d %f", produtos->nome, &produtos->codigo,&produtos->quantidadeEstoque, &produtos->preco);
-        if (produtos->codigo == codigo) {
+    while (fscanf(arquivo, " Nome: %49[^\n]\n", nome) == 1 &&
+           fscanf(arquivo, " Codigo: %d\n", &codigoArquivo) == 1 &&
+           fscanf(arquivo, " Quantidade: %d\n", &quantidade) == 1 &&
+           fscanf(arquivo, " Preco: %f\n", &preco) == 1) {
+
+        if (codigoArquivo == codigo) {
+            strcpy(produtos->nome, nome);
+            produtos->codigo = codigoArquivo;
+            produtos->quantidadeEstoque = quantidade;
+            produtos->preco = preco;
+
             printf("Código %d encontrado na posição %d\n", codigo, i);
             printf("Produto: %s, Preço: %.2f, Estoque: %d\n",
                    produtos->nome, produtos->preco, produtos->quantidadeEstoque);
@@ -132,6 +143,41 @@ bool verificarCodigo(int codigo, Produtos *produtos) {
         }
         i++;
     }
+
+    fclose(arquivo);
+    return false;
+}
+//função que verifica se o código do comprador já existe
+bool verificarCodigoComprador(int codigo, Comprador *compradores) {
+    FILE *arquivo = fopen("dados_compradores.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return false;
+    }
+
+    char nome[MAX_TAMANHO_NOME];
+    int codigoArquivo, quantidade;
+    float preco;
+    int i = 0;
+
+    while (fscanf(arquivo, "Nome: %s\n", compradores[i].nome) == 1 &&
+           fscanf(arquivo, "Codigo: %d\n", &compradores[i].codigo) == 1 &&
+           fscanf(arquivo, "CPF: %s\n", compradores[i].cpf) == 1 &&
+           fscanf(arquivo, "Email: %s\n", compradores[i].email) == 1 &&
+           fscanf(arquivo, "Rua: %s\n", compradores[i].endereco.rua) == 1 &&
+           fscanf(arquivo, "Bairro: %s\n", compradores[i].endereco.bairro) == 1 &&
+           fscanf(arquivo, "Cidade: %s\n", compradores[i].endereco.cidade) == 1 &&
+           fscanf(arquivo, "Estado: %s\n", compradores[i].endereco.estado) == 1 &&
+           fscanf(arquivo, "CEP: %s\n", compradores[i].endereco.cep) == 1) {
+
+        if (codigoArquivo == codigo) {
+            printf("\nComprador encontrado!");
+            fclose(arquivo);
+            return true;
+        }
+        i++;
+    }
+
     fclose(arquivo);
     return false;
 }
@@ -424,7 +470,7 @@ void cadastrarCompradores(){
         // gera o código do comprador e verifica se o código gerado já está cadastrado
         do {
             codigo = CodigoAleatorio();
-            verificaCodigo = verificarCodigo(codigo, compradores);
+            verificaCodigo = verificarCodigoComprador(codigo, compradores);
         }while(verificaCodigo == true);
         compradores[i].codigo = codigo;
         int c;
@@ -979,7 +1025,7 @@ void cadastrarProdutos(){
         // verifica se o código gerado já está cadastrado
         do {
             codigo = CodigoAleatorio();
-            verificaCodigo = verificarCodigo(codigo, produtos);
+            verificaCodigo = verificarCodigoProduto(codigo, produtos);
         }while(verificaCodigo == true);
 
         produtos[i].codigo = codigo;
