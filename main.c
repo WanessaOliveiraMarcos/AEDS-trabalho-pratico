@@ -567,7 +567,7 @@ void consultarCompradorPorCodigo(){
            fscanf(arquivo, "CEP: %s\n", comprador.endereco.cep) == 1 ){
 
         if (comprador.codigo == codigo) {
-            printf("\nProduto encontrado!\n");
+            printf("\nComprador encontrado!\n");
             printf("Nome: %s\n", comprador.nome);
             printf("Código: %d\n", comprador.codigo);
             printf("CPF: %s\n", comprador.cpf);
@@ -985,7 +985,7 @@ void consultarProdutoPorCodigo(){
             printf("Código: %d\n", codigoArquivo);
             printf("Quantidade em estoque: %d\n", quantidade);
             printf("Preço: R$ %.2f\n", preco);
-            encontrado = 1;
+            produtoEncontrado = true;
             break;
         }
     }
