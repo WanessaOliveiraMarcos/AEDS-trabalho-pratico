@@ -24,14 +24,14 @@
 #include <time.h>
 #define MAX_TAMANHO_PRODUTOS 100
 #define MAX_TAMANHO_COMPRADORES 100
-#define MAX_TAMANHO_NOME 50
-#define MAX_TAMANHO_CPF 15
-#define MAX_TAMANHO_EMAIL 50
-#define MAX_TAMANHO_RUA 50
-#define MAX_TAMANHO_BAIRRO 30
-#define MAX_TAMANHO_CIDADE 30
-#define MAX_TAMANHO_ESTADO 3
-#define MAX_TAMANHO_CEP 10
+#define MAX_TAMANHO_RUA      100
+#define MAX_TAMANHO_BAIRRO   50
+#define MAX_TAMANHO_CIDADE   50
+#define MAX_TAMANHO_ESTADO   3
+#define MAX_TAMANHO_CEP      9
+#define MAX_TAMANHO_NOME     100
+#define MAX_TAMANHO_CPF      50
+#define MAX_TAMANHO_EMAIL    100
 #define MAX_VENDEDORES 100
 #define MAX_VENDAS 1000
 #define ARQUIVO_VENDAS "vendas.txt"
@@ -91,27 +91,27 @@ typedef struct {
 *       Declaração das Funções         *
 * * * * * * * * * * * * * * * * * * * */
 
- void freteAteCemReais(float valorCompra){
+ int freteAteCemReais(float valorCompra){
      int frete=30;
      printf("\n----------------\n");
      printf("Frete = R$%d",frete);
      printf("\n----------------\n");
+     return 0;
 }
-//frete com o valor da compra de 100 ate 300 reais
-void freteAteTrezentosReais(float valorCompra){
+int freteAteTrezentosReais(float valorCompra){
     int frete=20;
     printf("\n----------------\n");
     printf("Frete = R$%d",frete);
     printf("\n----------------\n");
+    return 0;
 }
- //frete com o valor da compra acima de 300 reais
-void freteAcimaTrezentos(float valorCompra){
+ int freteAcimaTrezentos(float valorCompra){
     int frete=0;
     printf("\n----------------\n");
     printf("Frete = R$%d",frete);
     printf("\n----------------\n");
+    return 0;
 }
-// funçaõ que verifica se o código do produto já existe
 bool verificarCodigoProduto(int codigo, Produtos *produtos) {
     FILE *arquivo = fopen("dados_produtos.txt", "r");
     if (arquivo == NULL) {
@@ -147,7 +147,6 @@ bool verificarCodigoProduto(int codigo, Produtos *produtos) {
     fclose(arquivo);
     return false;
 }
-//função que verifica se o código do comprador já existe
 bool verificarCodigoComprador(int codigo, Comprador *compradores) {
     FILE *arquivo = fopen("dados_compradores.txt", "r");
     if (arquivo == NULL) {
@@ -181,6 +180,7 @@ bool verificarCodigoComprador(int codigo, Comprador *compradores) {
     fclose(arquivo);
     return false;
 }
+
 float obterPrecoProduto(int codigo) {
     Produtos produtos[MAX_TAMANHO_PRODUTOS];
     int numProdutos = carregarProdutos(produtos);
@@ -191,7 +191,7 @@ float obterPrecoProduto(int codigo) {
         }
     }
 
-    return -1.0f;  // Retorna -1 se o produto não for encontrado
+    return -1.0f;
 }
 bool verificarEstoque(int codigo, int quantidadeDesejada) {
     Produtos produtos[MAX_TAMANHO_PRODUTOS];
@@ -200,7 +200,7 @@ bool verificarEstoque(int codigo, int quantidadeDesejada) {
     for (int i = 0; i < numProdutos; i++) {
         if (produtos[i].codigo == codigo) {
             if (produtos[i].quantidadeEstoque >= quantidadeDesejada) {
-                return true;  // Tem estoque suficiente
+                return true;
             } else {
                 printf("Estoque insuficiente! Disponível: %d\n", produtos[i].quantidadeEstoque);
                 return false;
@@ -211,7 +211,6 @@ bool verificarEstoque(int codigo, int quantidadeDesejada) {
     printf("Produto com código %d não encontrado!\n", codigo);
     return false;
 }
-// Função que gera código aleatório para os Produtos
 int CodigoAleatorio()
 {
     srand(time(0));
@@ -219,7 +218,6 @@ int CodigoAleatorio()
     return codigo;
 }
 
-// Função para saber quantos compradores já foram registrados
 int carregarNumeroDeCompradores(Comprador compradores[]) {
     FILE *arquivo = fopen("dados_compradores.txt", "r");
     int i = 0;
@@ -245,7 +243,6 @@ int carregarNumeroDeCompradores(Comprador compradores[]) {
     fclose(arquivo);
     return i;
 }
-// Função para saber quantos produtos já foram registrados
 int carregarProdutos(Produtos produtos[]) {
     FILE *arquivo = fopen("dados_produtos.txt", "r");
     int i = 0;
@@ -263,15 +260,14 @@ int carregarProdutos(Produtos produtos[]) {
     }
 
     fclose(arquivo);
-    return i; // número de produtos carregados
+    return i;
 }
 
-// Verifica se o numero do vendedor digitado durante a venda existe nos registros dos vendedores
 int verificaNumeroVendedor(int numeroVendedor){
     FILE *arquivo = fopen(ARQUIVO_VENDEDORES, "r");
     Vendedor temp;
     bool vendedorExiste = false;
-    if (arquivo == NULL) return;
+    if (arquivo == NULL) return 0;
     while (fscanf(arquivo, "%[^,],%d,%f,%f\n", temp.nome, &temp.numero, &temp.salario, &temp.comissao) != EOF) {
         if (temp.numero == numeroVendedor) {
             vendedorExiste = true;
@@ -286,12 +282,11 @@ int verificaNumeroVendedor(int numeroVendedor){
     }
 }
 
-// Verifica se o numero do comprador digitado durante a venda existe nos registros dos compradores
 int verificaNumeroComprador(int numeroComprador){
     FILE *arquivo = fopen("dados_compradores.txt", "r");
     Comprador temp;
     bool compradorExiste = false;
-    if (arquivo == NULL) return;
+    if (arquivo == NULL) return 0;
     while (fscanf(arquivo, "Nome: %[^\n]\nCodigo: %d\nCPF: %[^\n]\nEmail: %[^\n]\nRua: %[^\n]\nBairro: %[^\n]\nCidade: %[^\n]\nEstado: %[^\n]\nCEP: %[^\n]\n",
               temp.nome, &temp.codigo, temp.cpf, temp.email,
               temp.endereco.rua, temp.endereco.bairro,
@@ -310,7 +305,6 @@ int verificaNumeroComprador(int numeroComprador){
     }
 }
 
-// Verifica se todos os campos do Cadastro de Compradores foram preenchidos
 int verificarCamposCompradores(Comprador *comprador){
     if (strlen(comprador->nome) == 0) {
         printf("Campo 'nome' nao esta preenchido\n");
@@ -353,7 +347,6 @@ int verificarCamposCompradores(Comprador *comprador){
     }
     return 1;
 }
-// Verifica se todos os campos do Cadastro de Produtos foram preenchidos
 int verificarCamposProdutos(Produtos *produto){
     if (strlen(produto->nome) == 0) {
         printf("Campo 'nome' nao esta preenchido\n");
@@ -373,7 +366,6 @@ int verificarCamposProdutos(Produtos *produto){
     return 1;
 }
 
-// Verifica se todos os campos do Cadastro de Vendedores foram preenchidos
 int verificarCamposVendedores(Vendedor *vendedor){
     if (strlen(vendedor->nome) == 0) {
         printf("Campo 'nome' nao esta preenchido\n");
@@ -397,7 +389,6 @@ int verificarCamposVendedores(Vendedor *vendedor){
     return 1;
 }
 
-// Verifica se todos os campos do Cadastro de Vendas foram preenchidos
 int verificarCamposVendas(Venda *venda) {
     if (strlen(venda->data) != 10 || venda->data[2] != '/' || venda->data[5] != '/') {
         printf("Formato de data inválido. Use dd/mm/aaaa\n");
@@ -449,22 +440,28 @@ int verificarCamposVendas(Venda *venda) {
 
     return 1;
 }
+
 /* * * * * * * * * * * * * * * * * * *
 *  Funções do CRUD dos Compradores   *
 * * * * * * * * * * * * * * * * * * */
-
-void cadastrarCompradores(){
+int obterDadosCompradores() {
     int resposta, codigo;
-    bool verificaCodigo = false;
     FILE *arquivo;
     Comprador compradores[MAX_TAMANHO_COMPRADORES];
+    bool verificaCodigo = false;
     arquivo = fopen("dados_compradores.txt", "a");
-    int i = carregarNumeroDeCompradores(compradores);
     if (arquivo == NULL) {
         perror("Erro ao abrir o arquivo");
-        return;
+        return 1;
     }
-    //inserindo dados
+
+    int i = carregarNumeroDeCompradores(compradores);
+    if (i == -1) {
+        fclose(arquivo);
+        return 1;
+    }
+
+   //inserindo dados
     do {
         printf("\n=== CADASTRO DE COMPRADOR %d ===\n", i+1);
         // gera o código do comprador e verifica se o código gerado já está cadastrado
@@ -519,42 +516,55 @@ void cadastrarCompradores(){
         compradores[i].endereco.estado[strcspn(compradores[i].endereco.estado, "\n")] = 0;
 
 
-        int verificarCampos = verificarCamposCompradores(&compradores[i]);
-        if(verificarCampos == 1){
-             // Escreve os dados no arquivo
-            fprintf(arquivo, "Nome: %s\n", compradores[i].nome);
-            fprintf(arquivo, "Codigo: %d\n", compradores[i].codigo);
-            fprintf(arquivo, "CPF: %s\n", compradores[i].cpf);
-            fprintf(arquivo, "Email: %s\n", compradores[i].email);
-            fprintf(arquivo, "Rua: %s\n", compradores[i].endereco.rua);
-            fprintf(arquivo, "Bairro: %s\n", compradores[i].endereco.bairro);
-            fprintf(arquivo, "Cidade: %s\n", compradores[i].endereco.cidade);
-            fprintf(arquivo, "Estado: %s\n", compradores[i].endereco.estado);
-            fprintf(arquivo, "CEP: %s\n", compradores[i].endereco.cep);
-            i++;
-            printf("\nComprador cadastrado com sucesso!");
-        } else{
-           printf("\nNao foi possivel cadastrar o comprador!");
+        if (verificarCamposCompradores(&compradores[i])) {
+            if (cadastrarCompradores(&compradores[i]) == 0) {
+                printf("\nComprador cadastrado com sucesso!\n");
+            } else {
+                printf("\nErro ao salvar o comprador.\n");
+            }
+        } else {
+            printf("\nComprador não cadastrado. Dados inválidos.\n");
         }
         printf("\nQuer cadastrar mais compradores? SIM=1 NAO=2: ");
         scanf("%d", &resposta);
 
     }while(resposta == 1);
 
-    // fecha o arquivo
     fclose(arquivo);
+    return 0;
 }
-void consultarCompradorPorCodigo(){
-    int codigo;
+int cadastrarCompradores(Comprador *comprador){
+    int resposta, codigo;
+    bool verificaCodigo = false;
+    Comprador compradores[MAX_TAMANHO_COMPRADORES];
+    FILE *arquivo;
+    arquivo = fopen("dados_compradores.txt", "a");
+
+    if (arquivo == NULL) {
+        perror("Erro ao abrir o arquivo");
+        return 1;
+    }
+    fprintf(arquivo, "Nome: %s\n", comprador->nome);
+    fprintf(arquivo, "Codigo: %d\n", comprador->codigo);
+    fprintf(arquivo, "CPF: %s\n", comprador->cpf);
+    fprintf(arquivo, "Email: %s\n", comprador->email);
+    fprintf(arquivo, "Rua: %s\n", comprador->endereco.rua);
+    fprintf(arquivo, "Bairro: %s\n", comprador->endereco.bairro);
+    fprintf(arquivo, "Cidade: %s\n", comprador->endereco.cidade);
+    fprintf(arquivo, "Estado: %s\n", comprador->endereco.estado);
+    fprintf(arquivo, "CEP: %s\n", comprador->endereco.cep);
+
+    fclose(arquivo);
+    return 0;
+}
+int consultarCompradorPorCodigo(int codigo){
     bool compradorEncontrado = false;
     Comprador comprador;
-    printf("Digite o codigo do comprador que deseja consultar:\n");
-    scanf("%d", &codigo);
 
     FILE *arquivo = fopen("dados_compradores.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo!\n");
-        return ;
+        return 1;
     };
     while (fscanf(arquivo, "Nome: %s\n", comprador.nome) == 1 &&
            fscanf(arquivo, "Codigo: %d\n", &comprador.codigo) == 1 &&
@@ -567,7 +577,7 @@ void consultarCompradorPorCodigo(){
            fscanf(arquivo, "CEP: %s\n", comprador.endereco.cep) == 1 ){
 
         if (comprador.codigo == codigo) {
-            printf("\nComprador encontrado!\n");
+            printf("\nProduto encontrado!\n");
             printf("Nome: %s\n", comprador.nome);
             printf("Código: %d\n", comprador.codigo);
             printf("CPF: %s\n", comprador.cpf);
@@ -583,12 +593,13 @@ void consultarCompradorPorCodigo(){
         }
     }
     fclose(arquivo);
-    if(compradorEncontrado == false){
+    if(!compradorEncontrado){
       printf("Código %d não encontrado!\n", codigo);
     }
+    return 0;
 }
 
-void consultarTodosCompradores(){
+int consultarTodosCompradores(){
     char nome[MAX_TAMANHO_NOME], cpf[MAX_TAMANHO_CPF], email[MAX_TAMANHO_EMAIL];
     char rua[MAX_TAMANHO_RUA], bairro[MAX_TAMANHO_BAIRRO], cidade[MAX_TAMANHO_CIDADE], estado[MAX_TAMANHO_ESTADO], cep[MAX_TAMANHO_CEP];
     Endereco endereco[1];
@@ -598,10 +609,9 @@ void consultarTodosCompradores(){
     FILE *arquivo = fopen("dados_compradores.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo!\n");
-        return ;
+        return 1;
     };
 
-    // %[^\n] tudo menos o \n
      while (fscanf(arquivo, "Nome: %[^\n]\n", nome) == 1 &&
         fscanf(arquivo, "Codigo: %[^\n]\n", &codigo) == 1 &&
         fscanf(arquivo, "CPF: %[^\n]\n", cpf) == 1 &&
@@ -623,10 +633,10 @@ void consultarTodosCompradores(){
         printf("---------------------------\n");
     }
     fclose(arquivo);
+    return 0;
 }
 
-void alterarCompradores() {
-    int codigoPesquisado;
+int alterarCompradores(int codigoPesquisado) {
     bool compradorEncontrado = false;
     int total = 0, i=0;
     Comprador tempComprador;
@@ -636,10 +646,8 @@ void alterarCompradores() {
     temp_compradores = fopen("temp_compradores.txt", "w");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo!\n");
-        return;
+        return 1;
     }
-    printf("Informe o codigo do comprador que deseja editar: ");
-    scanf("%d", &codigoPesquisado);
 
     while (fscanf(arquivo, "Nome: %[^\n]\n", tempComprador.nome) == 1 &&
             fscanf(arquivo, "Codigo: %[^\n]\n", &tempComprador.codigo) == 1 &&
@@ -652,7 +660,6 @@ void alterarCompradores() {
             fscanf(arquivo, "CEP: %[^\n]\n", tempComprador.endereco.cep) == 1 ) {
         if (codigoPesquisado == tempComprador.codigo) {
             compradorEncontrado = true;
-            // mostrar dados atuais
             printf("Comprador Encontrado!\n");
             printf("Nome: %s\n", tempComprador.nome);
             printf("Codigo: %s\n", tempComprador.codigo);
@@ -664,45 +671,35 @@ void alterarCompradores() {
             printf("CEP: %s\n", tempComprador.endereco.cep);
             printf("Estado: %s\n", tempComprador.endereco.estado);
 
-            // pega os novos dados do comprador encontrado
             printf("Digite o nome: ");
             fgets(comprador.nome, sizeof(comprador.nome), stdin);
-            // remove o '\n' se estiver presente
             comprador.nome[strcspn(comprador.nome, "\n")] = 0;
             printf("Digite o CPF do comprador (sem pontos): ");
             fgets(comprador.cpf, sizeof(comprador.cpf), stdin);
-            // remove o '\n' se estiver presente
             comprador.cpf[strcspn(comprador.cpf, "\n")] = 0;
-
 
             printf("Digite o email: ");
             fgets(comprador.email, sizeof(comprador.email), stdin);
-            // remove o '\n' se estiver presente
             comprador.email[strcspn(comprador.email, "\n")] = 0;
 
             printf("Digite a Rua: ");
             fgets(comprador.endereco.rua, sizeof(comprador.endereco.rua), stdin);
-            // remove o '\n' se estiver presente
             comprador.endereco.rua[strcspn(comprador.endereco.rua, "\n")] = 0;
 
             printf("Digite a Bairro: ");
             fgets(comprador.endereco.bairro, sizeof(comprador.endereco.bairro), stdin);
-            // remove o '\n' se estiver presente
             comprador.endereco.bairro[strcspn(comprador.endereco.bairro, "\n")] = 0;
 
             printf("Digite a Cidade: ");
             fgets(comprador.endereco.cidade, sizeof(comprador.endereco.cidade), stdin);
-            // remove o '\n' se estiver presente
             comprador.endereco.cidade[strcspn(comprador.endereco.cidade, "\n")] = 0;
 
             printf("Digite a CEP: ");
             fgets(comprador.endereco.cep, sizeof(comprador.endereco.cep), stdin);
-            // remove o '\n' se estiver presente
             comprador.endereco.cep[strcspn(comprador.endereco.cep, "\n")] = 0;
 
             printf("Digite a Estado:");
             fgets(comprador.endereco.estado, sizeof(comprador.endereco.estado), stdin);
-            // remove o '\n' se estiver presente
             comprador.endereco.estado[strcspn(comprador.endereco.estado, "\n")] = 0;
             fprintf(temp_compradores, "Nome: %s\n", comprador.nome);
             fprintf(temp_compradores, "Codigo: %d\n", tempComprador.codigo);
@@ -730,7 +727,6 @@ void alterarCompradores() {
     fclose(arquivo);
     fclose(temp_compradores);
     if (compradorEncontrado) {
-        // substitui o arquivo original pelo arquivo temporário
         remove("dados_compradores.txt");
         rename("temp_compradores.txt", "dados_compradores.txt");
         printf("\nComprador alterado com sucesso!\n");
@@ -739,10 +735,10 @@ void alterarCompradores() {
         printf("\nComprador nao encontrado!.\n");
     }
     printf("Comprador alterado.\n");
+    return 0;
 }
 
-void excluirComprador(){
-    int codigoPesquisado;
+int excluirComprador(int codigoPesquisado) {
     bool compradorEncontrado = false;
     int total = 0, i=0;
     Comprador tempComprador;
@@ -752,7 +748,7 @@ void excluirComprador(){
     temp_compradores = fopen("temp_compradores.txt", "w");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo!\n");
-        return;
+        return 1;
     }
     printf("Informe o codigo do comprador que deseja excluir: ");
     scanf("%d", &codigoPesquisado);
@@ -778,7 +774,6 @@ void excluirComprador(){
             fprintf(temp_compradores, "CEP: %s\n", tempComprador.endereco.cep);
             break;
         } else {
-            // mostrar dados atuais
             printf("Comprador Encontrado!\n");
             printf("Nome: %s\n", tempComprador.nome);
             printf("Codigo: %d\n", tempComprador.codigo);
@@ -796,7 +791,6 @@ void excluirComprador(){
     fclose(arquivo);
     fclose(temp_compradores);
     if (compradorEncontrado) {
-        // substitui o arquivo original pelo arquivo temporário
         remove("dados_compradores.txt");
         rename("temp_compradores.txt", "dados_compradores.txt");
         printf("\nComprador excluido com sucesso!\n");
@@ -804,26 +798,25 @@ void excluirComprador(){
         remove("temp_compradores.txt");
         printf("\nComprador nao encontrado!.\n");
     }
+    return 0;
 }
 
 /* * * * * * * * * * * * * * * * * * *
 *    Funções do CRUD dos Produtos  *
 * * * * * * * * * * * * * * * * * * */
 
-void excluirProduto(){
+int excluirProduto(int codigo){
     FILE *arquivo = fopen("dados_produtos.txt", "r");
     FILE *temp = fopen("temp.txt", "w");
-    int codigo, resposta = 0;
+    int resposta = 0;
     bool produtoEncontrado = false;
     Produtos produto;
     Produtos tempProduto;
     do {
-    printf("Digite o código do produto que deseja excluir: ");
-    scanf("%d", &codigo);
 
     if (arquivo == NULL || temp == NULL) {
         printf("Erro ao abrir o arquivo!\n");
-        return;
+        return 1;
     }
 
     while (fscanf(arquivo, "Nome: %s\n", tempProduto.nome) == 1 &&
@@ -832,7 +825,6 @@ void excluirProduto(){
            fscanf(arquivo, "Preco: %f\n", &tempProduto.preco) == 1) {
 
         if (tempProduto.codigo != codigo) {
-            // faz uma cópia do produto apenas dos produtos de codigo diferente do que deseja excluir
             fprintf(temp, "Nome: %s\n", tempProduto.nome);
             fprintf(temp, "Codigo: %d\n", tempProduto.codigo);
             fprintf(temp, "Quantidade: %d\n", tempProduto.quantidadeEstoque);
@@ -851,7 +843,6 @@ void excluirProduto(){
     fclose(temp);
 
     if (produtoEncontrado) {
-        // substitui o arquivo original pelo arquivo temporário
         remove("dados_produtos.txt");
         rename("temp.txt", "dados_produtos.txt");
         printf("\nProduto excluido com sucesso!\n");
@@ -859,25 +850,21 @@ void excluirProduto(){
         remove("temp.txt");
         printf("\nProduto com código %d não encontrado.\n", codigo);
     }
-    // escolher se quer continuar
     printf("\nQuer excluir mais produtos? SIM=1 NAO=2: ");
     scanf("%d", &resposta);
     }while(resposta == 1);
+    return 0;
 }
-void alterarProdutos() {
+int alterarProdutos(int codigo) {
     FILE *arquivo = fopen("dados_produtos.txt", "r");
     FILE *temp = fopen("temp.txt", "w");
-    int codigo;
     bool produtoEncontrado = false;
     Produtos produto;
     Produtos tempProduto;
 
-    printf("Digite o código do produto que deseja alterar: ");
-    scanf("%d", &codigo);
-
     if (arquivo == NULL || temp == NULL) {
         printf("Erro ao abrir o arquivo!\n");
-        return;
+        return 1;
     }
 
     while (fscanf(arquivo, "Nome: %s\n", tempProduto.nome) == 1 &&
@@ -888,14 +875,12 @@ void alterarProdutos() {
         if (tempProduto.codigo == codigo) {
             produtoEncontrado = true;
 
-            // mostrar dados atuais
             printf("\nProduto encontrado!\n");
             printf("Nome: %s\n", tempProduto.nome);
             printf("Código: %d\n", tempProduto.codigo);
             printf("Quantidade: %d\n", tempProduto.quantidadeEstoque);
             printf("Preço: R$ %.2f\n", tempProduto.preco);
 
-            // pega os novos dados do produto encontrado
             printf("\nDigite o novo nome do produto: ");
             scanf("%s", produto.nome);
 
@@ -907,14 +892,12 @@ void alterarProdutos() {
 
             produto.codigo = codigo;
 
-            // grava os dados atualizados no arquivo temporário
             fprintf(temp, "Nome: %s\n", produto.nome);
             fprintf(temp, "Codigo: %d\n", produto.codigo);
             fprintf(temp, "Quantidade: %d\n", produto.quantidadeEstoque);
             fprintf(temp, "Preco: %.2f\n", produto.preco);
 
         } else {
-            // faz uma cópia do Produto que não vai ser alterado
             fprintf(temp, "Nome: %s\n", tempProduto.nome);
             fprintf(temp, "Codigo: %d\n", tempProduto.codigo);
             fprintf(temp, "Quantidade: %d\n", tempProduto.quantidadeEstoque);
@@ -926,7 +909,6 @@ void alterarProdutos() {
     fclose(temp);
 
     if (produtoEncontrado) {
-        // substitui o arquivo original pelo arquivo temporário
         remove("dados_produtos.txt");
         rename("temp.txt", "dados_produtos.txt");
         printf("\nProduto alterado com sucesso!\n");
@@ -934,8 +916,9 @@ void alterarProdutos() {
         remove("temp.txt");
         printf("\nProduto com código %d não encontrado.\n", codigo);
     }
+    return 0;
 }
-void consultarTodosProdutos(){
+int consultarTodosProdutos(){
     char nome[50];
     int codigoArquivo, quantidade;
     float preco;
@@ -943,9 +926,8 @@ void consultarTodosProdutos(){
     FILE *arquivo = fopen("dados_produtos.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo!\n");
-        return ;
+        return 1;
     };
-    // %[^\n] tudo menos o \n
      while (fscanf(arquivo, "Nome: %[^\n]\n", nome) == 1 &&
            fscanf(arquivo, "Codigo: %d\n", &codigoArquivo) == 1 &&
            fscanf(arquivo, "Quantidade: %d\n", &quantidade) == 1 &&
@@ -958,21 +940,19 @@ void consultarTodosProdutos(){
         printf("---------------------------\n");
     }
     fclose(arquivo);
+    return 0;
 }
-void consultarProdutoPorCodigo(){
-    int codigo;
+int consultarProdutoPorCodigo(int codigo){
     bool produtoEncontrado = false;
     char nome[50];
     int codigoArquivo, quantidade;
     float preco;
     int encontrado = 0;
-    printf("Digite o codigo do produto que deseja consultar:\n");
-    scanf("%d", &codigo);
 
     FILE *arquivo = fopen("dados_produtos.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo!\n");
-        return ;
+        return 1;
     };
     while (fscanf(arquivo, "Nome: %s\n", nome) == 1 &&
            fscanf(arquivo, "Codigo: %d\n", &codigoArquivo) == 1 &&
@@ -993,115 +973,135 @@ void consultarProdutoPorCodigo(){
     if(produtoEncontrado == false){
       printf("Código %d não encontrado!\n", codigo);
     }
+    return 0;
 }
-
-void cadastrarProdutos(){
+int obterDadosProdutos() {
+    Produtos produto;
     int resposta, codigo;
-    bool verificaCodigo = false;
-    FILE *arquivo;
-    Produtos produtos[MAX_TAMANHO_PRODUTOS];
-    arquivo = fopen("dados_produtos.txt", "a");
-    int i = carregarProdutos(produtos);
-    if (arquivo == NULL) {
-        perror("Erro ao abrir o arquivo");
-        return;
-    }
-    //inserindo dados
+    bool verificaCodigo;
+
     do {
-        printf("\n=== CADASTRO DE PRODUTO %d ===\n", i+1);
         int c;
         while ((c = getchar()) != '\n' && c != EOF);
-        printf("Digite o nome do produto: ");
-        fgets(produtos[i].nome, sizeof(produtos[i].nome), stdin);
 
-        // remove o '\n' se estiver presente
-        produtos[i].nome[strcspn(produtos[i].nome, "\n")] = 0;
+        printf("\n=== CADASTRO DE PRODUTO ===\n");
+
+        printf("Digite o nome do produto: ");
+        fgets(produto.nome, sizeof(produto.nome), stdin);
+        produto.nome[strcspn(produto.nome, "\n")] = 0;
 
         printf("Digite a quantidade do produto no estoque: ");
-        scanf("%d", &produtos[i].quantidadeEstoque);
+        scanf("%d", &produto.quantidadeEstoque);
 
         printf("Digite o valor do produto: R$ ");
-        scanf("%f", &produtos[i].preco);
-        // verifica se o código gerado já está cadastrado
+        scanf("%f", &produto.preco);
+
         do {
             codigo = CodigoAleatorio();
-            verificaCodigo = verificarCodigoProduto(codigo, produtos);
-        }while(verificaCodigo == true);
+            verificaCodigo = verificarCodigoProduto(codigo, &produto);
+        } while (verificaCodigo == true);
 
-        produtos[i].codigo = codigo;
+        produto.codigo = codigo;
 
-        int verificarCampos = verificarCamposProdutos(&produtos[i]);
-        if(verificarCampos == 1){
-            // Escreve os dados no arquivo
-            fprintf(arquivo, "Nome: %s\n", produtos[i].nome);
-            fprintf(arquivo, "Codigo: %d\n", produtos[i].codigo);
-            fprintf(arquivo, "Quantidade: %d\n", produtos[i].quantidadeEstoque);
-            fprintf(arquivo, "Preco: %.2f\n", produtos[i].preco);
-            i++;
-            printf("\nProduto cadastrado com sucesso!");
-        }else{
-            printf("\nProduto nao cadastrado!");
+        if (verificarCamposProdutos(&produto)) {
+            if (cadastrarProdutos(&produto) == 0) {
+                printf("\nProduto cadastrado com sucesso!\n");
+            } else {
+                printf("\nErro ao salvar o produto.\n");
+            }
+        } else {
+            printf("\nProduto não cadastrado. Dados inválidos.\n");
         }
 
-        printf("\nQuer cadastrar mais produtos? SIM=1 NAO=2: ");
+        printf("Quer cadastrar mais produtos? SIM=1 NAO=2: ");
         scanf("%d", &resposta);
 
-    }while(resposta == 1 && i < MAX_TAMANHO_PRODUTOS);
-    if(i >= MAX_TAMANHO_PRODUTOS){
-        printf("O numero de produtos cadastrados excedeu o limite de %d", MAX_TAMANHO_PRODUTOS);
-        return;
+    } while (resposta == 1);
+
+    return 0;
+}
+
+
+int cadastrarProdutos(Produtos *produto) {
+    FILE *arquivo = fopen("dados_produtos.txt", "a");
+    if (arquivo == NULL) {
+        perror("Erro ao abrir o arquivo");
+        return 1;
     }
 
-    // fecha o arquivo
+    fprintf(arquivo, "Nome: %s\n", produto->nome);
+    fprintf(arquivo, "Codigo: %d\n", produto->codigo);
+    fprintf(arquivo, "Quantidade: %d\n", produto->quantidadeEstoque);
+    fprintf(arquivo, "Preco: %.2f\n", produto->preco);
+
     fclose(arquivo);
+    return 0;
 }
+
 
 /* * * * * * * * * * * * * * * * * * *
 *   Funções do CRUD dos Vendedores   *
 * * * * * * * * * * * * * * * * * * */
 
-void cadastrarVendedor() {
+int obterDadosVendedores(){
     FILE *arquivo = fopen(ARQUIVO_VENDEDORES, "a+");
-    if (arquivo == NULL) return;
+    if (arquivo == NULL) return 1;
 
     Vendedor v;
-    int existe = 0;
 
     printf("Número do vendedor: ");
     scanf("%d", &v.numero);
     getchar();
 
+    // Verificar se número já existe
     Vendedor temp;
-    while (fscanf(arquivo, "%[^,],%d,%f,%f\n", temp.nome, &temp.numero, &temp.salario, &temp.comissao) != EOF) {
+    while (fscanf(arquivo, "%49[^,],%d,%f,%f\n", temp.nome, &temp.numero, &temp.salario, &temp.comissao) != EOF) {
         if (temp.numero == v.numero) {
             printf("Número já existente.\n");
             fclose(arquivo);
-            return;
+            return 1;
         }
     }
+    fclose(arquivo);  // Fechar após leitura
 
     printf("Nome do vendedor: ");
-    fgets(v.nome, 50, stdin);
-    v.nome[strcspn(v.nome, "\n")] = 0;
+    fgets(v.nome, sizeof(v.nome), stdin);
+    v.nome[strcspn(v.nome, "\n")] = 0;  // Remover \n do final
 
     printf("Salário fixo: ");
     scanf("%f", &v.salario);
     getchar();
 
-    v.comissao = 0;
+    v.comissao = 0;  // Inicializa com 0
+
     int verificaCampos = verificarCamposVendedores(&v);
-    if(verificaCampos == 1){
-         fprintf(arquivo, "%s,%d,%.2f,%.2f\n", v.nome, v.numero, v.salario, v.comissao);
-         printf("\nVendedor cadastrado com sucesso!");
-    }else{
-        printf("Nao foi possivel cadastrar o Vendedor!");
+    if (verificaCampos == 1) {
+        if (cadastrarVendedor(&v) == 0) {
+            printf("\nVendedor cadastrado com sucesso!\n");
+            return 0;
+        } else {
+            printf("Erro ao cadastrar o Vendedor!\n");
+            return 1;
+        }
+    } else {
+        printf("Não foi possível cadastrar o Vendedor! Campos inválidos.\n");
+        return 1;
     }
-    fclose(arquivo);
 }
 
-void listarVendedores() {
+int cadastrarVendedor(Vendedor *vendedor) {
+    FILE *arquivo = fopen(ARQUIVO_VENDEDORES, "a");
+    if (arquivo == NULL) return 1;
+
+    fprintf(arquivo, "%s,%d,%.2f,%.2f\n", vendedor->nome, vendedor->numero, vendedor->salario, vendedor->comissao);
+
+    fclose(arquivo);
+    return 0;
+}
+
+int listarVendedores() {
     FILE *arquivo = fopen(ARQUIVO_VENDEDORES, "r");
-    if (arquivo == NULL) return;
+    if (arquivo == NULL) return 1;
 
     Vendedor v;
     printf("\nLista de Vendedores:\n");
@@ -1109,23 +1109,20 @@ void listarVendedores() {
         printf("Nome: %s | Numero: %d | Salario: %.2f | Comissao: %.2f\n", v.nome, v.numero, v.salario, v.comissao);
     }
     fclose(arquivo);
+    return 0;
 }
 
-void alterarVendedor() {
+int alterarVendedor(int numero) {
     Vendedor lista[MAX_VENDEDORES];
-    int total = 0, numero, encontrado = 0;
+    int total = 0, encontrado = 0;
 
     FILE *arquivo = fopen(ARQUIVO_VENDEDORES, "r");
-    if (arquivo == NULL) return;
+    if (arquivo == NULL) return 1;
 
     while (fscanf(arquivo, "%[^,],%d,%f,%f\n", lista[total].nome, &lista[total].numero, &lista[total].salario, &lista[total].comissao) != EOF) {
         total++;
     }
     fclose(arquivo);
-
-    printf("Informe o numero do vendedor a alterar: ");
-    scanf("%d", &numero);
-    getchar();
 
     for (int i = 0; i < total; i++) {
         if (lista[i].numero == numero) {
@@ -1142,7 +1139,7 @@ void alterarVendedor() {
 
     if (!encontrado) {
         printf("Vendedor nao encontrado.\n");
-        return;
+        return 1;
     }
 
     arquivo = fopen(ARQUIVO_VENDEDORES, "w");
@@ -1151,23 +1148,20 @@ void alterarVendedor() {
     }
     fclose(arquivo);
     printf("Vendedor alterado.\n");
+    return 0;
 }
 
-void excluirVendedor() {
+int excluirVendedor(int numero) {
     Vendedor lista[MAX_VENDEDORES];
-    int total = 0, numero, encontrado = 0;
+    int total = 0, encontrado = 0;
 
     FILE *arquivo = fopen(ARQUIVO_VENDEDORES, "r");
-    if (arquivo == NULL) return;
+    if (arquivo == NULL) return 1;
 
     while (fscanf(arquivo, "%[^,],%d,%f,%f\n", lista[total].nome, &lista[total].numero, &lista[total].salario, &lista[total].comissao) != EOF) {
         total++;
     }
     fclose(arquivo);
-
-    printf("Informe o número do vendedor a excluir: ");
-    scanf("%d", &numero);
-    getchar();
 
     arquivo = fopen(ARQUIVO_VENDEDORES, "w");
     for (int i = 0; i < total; i++) {
@@ -1183,13 +1177,14 @@ void excluirVendedor() {
         printf("Vendedor excluido.\n");
     else
         printf("Vendedor nao encontrado.\n");
+    return 0;
 }
 
 /* * * * * * * * * * * * * * * * * * *
 *     Funções do CRUD das Vendas     *
 * * * * * * * * * * * * * * * * * * */
 
-void atualizarEstoque(int codigo, int quantidadeVendida) {
+int atualizarEstoque(int codigo, int quantidadeVendida) {
     FILE *arquivo = fopen("dados_produtos.txt", "r");
     FILE *temp = fopen("temp.txt", "w");
     int quantidadeNovaEstoque;
@@ -1199,7 +1194,7 @@ void atualizarEstoque(int codigo, int quantidadeVendida) {
 
     if (arquivo == NULL || temp == NULL) {
         printf("Erro ao abrir o arquivo!\n");
-        return;
+        return 1;
     }
 
     while (fscanf(arquivo, "Nome: %s\n", tempProduto.nome) == 1 &&
@@ -1212,13 +1207,11 @@ void atualizarEstoque(int codigo, int quantidadeVendida) {
 
             quantidadeNovaEstoque = tempProduto.quantidadeEstoque - quantidadeVendida;
 
-            // grava os dados atualizados no arquivo temporário
             fprintf(temp, "Nome: %s\n", tempProduto.nome);
             fprintf(temp, "Codigo: %d\n", tempProduto.codigo);
             fprintf(temp, "Quantidade: %d\n", quantidadeNovaEstoque);
             fprintf(temp, "Preco: %.2f\n", tempProduto.preco);
         } else {
-            // faz uma cópia do Produto que não vai ser alterado
             fprintf(temp, "Nome: %s\n", tempProduto.nome);
             fprintf(temp, "Codigo: %d\n", tempProduto.codigo);
             fprintf(temp, "Quantidade: %d\n", tempProduto.quantidadeEstoque);
@@ -1230,32 +1223,31 @@ void atualizarEstoque(int codigo, int quantidadeVendida) {
     fclose(temp);
 
     if (produtoEncontrado) {
-        // substitui o arquivo original pelo arquivo temporário
         remove("dados_produtos.txt");
         rename("temp.txt", "dados_produtos.txt");
     } else {
         remove("temp.txt");
         printf("\nProduto com código %d não encontrado.\n", codigo);
     }
+    return 0;
 }
-
-void cadastrarVenda() {
+int obterDadosVenda() {
     FILE *arquivo = fopen(ARQUIVO_VENDAS, "a+");
     if (arquivo == NULL) {
         perror("Erro ao abrir o arquivo");
-        return;
+        return 1;
     }
 
     Venda v;
     v.produtos = NULL;
     v.quantidadeTotalProdutos = 0;
-    v.capacidadeItens = 5; // Capacidade inicial
+    v.capacidadeItens = 5;
     v.produtos = malloc(v.capacidadeItens * sizeof(ProdutoVenda));
 
     if (v.produtos == NULL) {
         printf("Erro ao alocar memória para produtos.\n");
         fclose(arquivo);
-        return;
+        return 1;
     }
 
     printf("Número da venda: ");
@@ -1265,47 +1257,44 @@ void cadastrarVenda() {
     scanf("%d", &v.numeroVendedor);
     getchar();
 
-    // Verificando se o vendedor existe
     int verificaVendedor = verificaNumeroVendedor(v.numeroVendedor);
-    if(verificaVendedor != 1){
-        printf("\nO numero do Vendedor digitado nao foi encontrado!");
-        printf("\nCadastre o vendedor antes de cadastrar a Venda");
+    if (verificaVendedor != 1) {
+        printf("\nO número do vendedor digitado não foi encontrado!");
+        printf("\nCadastre o vendedor antes de cadastrar a venda.\n");
         free(v.produtos);
         fclose(arquivo);
-        return;
+        return 1;
     }
 
     printf("Código do comprador: ");
     scanf("%d", &v.codigoComprador);
     getchar();
 
-    // Verificando se o comprador existe
     int verificaComprador = verificaNumeroComprador(v.codigoComprador);
-    if(verificaComprador != 1){
-        printf("\nO numero do Vendedor digitado nao foi encontrado!");
-        printf("\nCadastre o vendedor antes de cadastrar a Venda");
+    if (verificaComprador != 1) {
+        printf("\nO número do comprador digitado não foi encontrado!");
+        printf("\nCadastre o comprador antes de cadastrar a venda.\n");
         free(v.produtos);
         fclose(arquivo);
-        return;
+        return 1;
     }
-    printf("Data da venda (dd/mm/aaaa): ");
-    fgets(v.data, 11, stdin);
-    v.data[strcspn(v.data, "\n")] = 0;
-    getchar();
 
-    // Cadastro de produtos
+    printf("Data da venda (dd/mm/aaaa): ");
+    fgets(v.data, sizeof(v.data), stdin);
+    v.data[strcspn(v.data, "\n")] = 0;
+
     char continuar = 'S';
     v.valorTotal = 0;
 
-    while(continuar == 'S' || continuar == 's') {
-        if(v.quantidadeTotalProdutos >= v.capacidadeItens) {
+    while (continuar == 'S' || continuar == 's') {
+        if (v.quantidadeTotalProdutos >= v.capacidadeItens) {
             v.capacidadeItens *= 2;
             ProdutoVenda *temp = realloc(v.produtos, v.capacidadeItens * sizeof(ProdutoVenda));
-            if(temp == NULL) {
+            if (temp == NULL) {
                 printf("Erro ao realocar memória.\n");
                 free(v.produtos);
                 fclose(arquivo);
-                return;
+                return 1;
             }
             v.produtos = temp;
         }
@@ -1314,9 +1303,8 @@ void cadastrarVenda() {
         printf("\nCódigo do produto: ");
         scanf("%d", &pv.codigoProduto);
 
-        // Verificar se produto existe e pegar preço unitário
         float preco = obterPrecoProduto(pv.codigoProduto);
-        if(preco == -1) {
+        if (preco == -1) {
             printf("Produto não encontrado!\n");
             continue;
         }
@@ -1325,8 +1313,7 @@ void cadastrarVenda() {
         printf("Quantidade vendida: ");
         scanf("%d", &pv.quantidadeVendida);
 
-        // Verificar estoque
-        if(!verificarEstoque(pv.codigoProduto, pv.quantidadeVendida)) {
+        if (!verificarEstoque(pv.codigoProduto, pv.quantidadeVendida)) {
             printf("Quantidade em estoque insuficiente!\n");
             continue;
         }
@@ -1341,45 +1328,61 @@ void cadastrarVenda() {
         getchar();
     }
 
-    // Verifica se há produtos na venda antes de continuar
-    if(v.quantidadeTotalProdutos == 0) {
+    if (v.quantidadeTotalProdutos == 0) {
         printf("Nenhum produto válido foi adicionado à venda. Operação cancelada.\n");
         free(v.produtos);
         fclose(arquivo);
-        return;
+        return 1;
     }
 
-    // Escrever no arquivo de vendas
-    fprintf(arquivo, "Venda: %d\n", v.numeroVenda);
-    fprintf(arquivo, "Vendedor: %d\n", v.numeroVendedor);
-    fprintf(arquivo, "Comprador: %d\n", v.codigoComprador);
-    fprintf(arquivo, "Data: %s\n", v.data);
-    fprintf(arquivo, "Total: %.2f\n", v.valorTotal);
+    // Chama cadastrarVenda para salvar a venda
+    if (cadastrarVenda(&v) == 0) {
+        fclose(arquivo);
+        return 0;
+    } else {
+        printf("Erro ao cadastrar a venda.\n");
+        free(v.produtos);
+        fclose(arquivo);
+        return 1;
+    }
+}
+
+int cadastrarVenda(Venda *v) {
+    FILE *arquivo = fopen(ARQUIVO_VENDAS, "a");
+    if (arquivo == NULL) {
+        perror("Erro ao abrir o arquivo");
+        return 1;
+    }
+
+    fprintf(arquivo, "Venda: %d\n", v->numeroVenda);
+    fprintf(arquivo, "Vendedor: %d\n", v->numeroVendedor);
+    fprintf(arquivo, "Comprador: %d\n", v->codigoComprador);
+    fprintf(arquivo, "Data: %s\n", v->data);
+    fprintf(arquivo, "Total: %.2f\n", v->valorTotal);
     fprintf(arquivo, "Itens:\n");
 
-    for(int i = 0; i < v.quantidadeTotalProdutos; i++) {
+    for (int i = 0; i < v->quantidadeTotalProdutos; i++) {
         fprintf(arquivo, "%d,%d,%.2f,%.2f\n",
-                v.produtos[i].codigoProduto,
-                v.produtos[i].quantidadeVendida,
-                v.produtos[i].precoUnitario,
-                v.produtos[i].subtotal);
+                v->produtos[i].codigoProduto,
+                v->produtos[i].quantidadeVendida,
+                v->produtos[i].precoUnitario,
+                v->produtos[i].subtotal);
 
-        // Atualiza o estoque para cada produto vendido
-        atualizarEstoque(v.produtos[i].codigoProduto, v.produtos[i].quantidadeVendida);
+        atualizarEstoque(v->produtos[i].codigoProduto, v->produtos[i].quantidadeVendida);
     }
     fprintf(arquivo, "---\n");
 
-    printf("\nVenda cadastrada com sucesso! Total: R$ %.2f\n", v.valorTotal);
+    printf("\nVenda cadastrada com sucesso! Total: R$ %.2f\n", v->valorTotal);
 
-    // Libera memória e fecha arquivo
-    free(v.produtos);
+    free(v->produtos);
     fclose(arquivo);
+    return 0;
 }
-void listarVendas() {
+int listarVendas() {
     FILE *arquivo = fopen(ARQUIVO_VENDAS, "r");
     if (arquivo == NULL) {
         perror("Erro ao abrir o arquivo");
-        return;
+        return 1;
     }
 
     printf("\nLista de Vendas:\n");
@@ -1411,7 +1414,6 @@ void listarVendas() {
             printf("Data: %s | Total: R$ %.2f\n", data, total);
             printf("Itens:\n");
 
-            // Pular linha "Itens:"
             fgets(linha, sizeof(linha), arquivo);
 
             while(fgets(linha, sizeof(linha), arquivo) && strcmp(linha, "---\n") != 0) {
@@ -1427,26 +1429,21 @@ void listarVendas() {
     }
 
     fclose(arquivo);
+    return 0;
 }
 
-void alterarVenda() {
+int alterarVenda(int numeroVenda) {
     FILE *arquivo = fopen(ARQUIVO_VENDAS, "r");
     if (arquivo == NULL) {
         perror("Erro ao abrir o arquivo");
-        return;
+        return 1;
     }
 
-    int numeroVenda;
-    printf("Número da venda a alterar: ");
-    scanf("%d", &numeroVenda);
-    getchar();
-
-    // Criar arquivo temporário
     FILE *temp = fopen("temp_vendas.txt", "w");
     if (temp == NULL) {
         perror("Erro ao criar arquivo temporário");
         fclose(arquivo);
-        return;
+        return 1;
     }
 
     char linha[100];
@@ -1465,14 +1462,12 @@ void alterarVenda() {
                 printf("\nVenda encontrada:\n");
                 printf("%s", linha);
 
-                // Ler e mostrar os dados atuais
                 char dadosVenda[5][100];
                 for(int i = 0; i < 5; i++) {
                     fgets(dadosVenda[i], sizeof(dadosVenda[i]), arquivo);
                     printf("%s", dadosVenda[i]);
                 }
 
-                // Perguntar o que alterar
                 printf("\nO que deseja alterar?\n");
                 printf("1 - Vendedor\n");
                 printf("2 - Comprador\n");
@@ -1486,13 +1481,11 @@ void alterarVenda() {
                 getchar();
 
                 if(opcao == 0) {
-                    // Copiar a venda sem alterações
                     fprintf(temp, "Venda: %d\n", num);
                     for(int i = 0; i < 5; i++) {
                         fprintf(temp, "%s", dadosVenda[i]);
                     }
 
-                    // Copiar itens
                     while(fgets(linha, sizeof(linha), arquivo) && strcmp(linha, "---\n") != 0) {
                         fprintf(temp, "%s", linha);
                     }
@@ -1502,7 +1495,6 @@ void alterarVenda() {
                     continue;
                 }
 
-                // Processar alteração
                 if(opcao == 1) {
                     printf("Novo número do vendedor: ");
                     int novoVendedor;
@@ -1532,16 +1524,13 @@ void alterarVenda() {
                 }
                 else if(opcao == 4) {
                     printf("Alteração de itens ainda não implementada.\n");
-                    // Implementar lógica para alterar itens se necessário
                 }
 
-                // Escrever dados alterados
                 fprintf(temp, "Venda: %d\n", num);
                 for(int i = 0; i < 5; i++) {
                     fprintf(temp, "%s", dadosVenda[i]);
                 }
 
-                // Copiar itens (sem alteração por enquanto)
                 while(fgets(linha, sizeof(linha), arquivo) && strcmp(linha, "---\n") != 0) {
                     fprintf(temp, "%s", linha);
                 }
@@ -1567,26 +1556,21 @@ void alterarVenda() {
         remove("temp_vendas.txt");
         printf("Venda não encontrada.\n");
     }
+    return 0;
 }
 
-void excluirVenda() {
+int excluirVenda(int numeroVenda) {
     FILE *arquivo = fopen(ARQUIVO_VENDAS, "r");
     if (arquivo == NULL) {
         perror("Erro ao abrir o arquivo");
-        return;
+        return 1;
     }
 
-    int numeroVenda;
-    printf("Número da venda a excluir: ");
-    scanf("%d", &numeroVenda);
-    getchar();
-
-    // Criar arquivo temporário
     FILE *temp = fopen("temp_vendas.txt", "w");
     if (temp == NULL) {
         perror("Erro ao criar arquivo temporário");
         fclose(arquivo);
-        return;
+        return 1;
     }
 
     char linha[100];
@@ -1603,7 +1587,6 @@ void excluirVenda() {
                 dentroDaVenda = 1;
                 printf("Venda Nº %d será excluída.\n", num);
 
-                // Pular todas as linhas até encontrar "---"
                 while(fgets(linha, sizeof(linha), arquivo) && strcmp(linha, "---\n") != 0) {
                     continue;
                 }
@@ -1629,22 +1612,18 @@ void excluirVenda() {
         remove("temp_vendas.txt");
         printf("Venda não encontrada.\n");
     }
+    return 0;
 }
 
 /* * * * * * * * * * * * * * * * * *  * * * * * *
 *    Funções de Emitir e Buscar Notas Fiscais   *
 * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void emitirNotaFiscal() {
-    int numeroVenda;
-    printf("Digite o número da venda: ");
-    scanf("%d", &numeroVenda);
-
-    // Buscar a venda no arquivo de vendas
+int emitirNotaFiscal(int numeroVenda) {
     FILE *arquivoVendas = fopen(ARQUIVO_VENDAS, "r");
     if (!arquivoVendas) {
         printf("Erro ao abrir arquivo de vendas.\n");
-        return;
+        return 1;
     }
 
     Venda venda;
@@ -1657,7 +1636,6 @@ void emitirNotaFiscal() {
             if (sscanf(linha, "Venda: %d", &venda.numeroVenda) == 1 && venda.numeroVenda == numeroVenda) {
                 vendaEncontrada = true;
 
-                // Ler os dados da venda
                 while (fgets(linha, sizeof(linha), arquivoVendas)) {
                     if (strstr(linha, "Vendedor:")) {
                         sscanf(linha, "Vendedor: %d", &venda.numeroVendedor);
@@ -1672,12 +1650,10 @@ void emitirNotaFiscal() {
                         sscanf(linha, "Total: %f", &venda.valorTotal);
                     }
                     else if (strstr(linha, "Itens:")) {
-                        // Alocar memória para produtos
                         venda.capacidadeItens = 2;
                         venda.produtos = malloc(venda.capacidadeItens * sizeof(ProdutoVenda));
                         venda.quantidadeTotalProdutos = 0;
 
-                        // Ler os produtos até encontrar "---"
                         while (fgets(linha, sizeof(linha), arquivoVendas) && !strstr(linha, "---")) {
                             if (venda.quantidadeTotalProdutos >= venda.capacidadeItens) {
                                 venda.capacidadeItens *= 2;
@@ -1686,7 +1662,7 @@ void emitirNotaFiscal() {
                                     printf("Erro ao alocar memória.\n");
                                     free(venda.produtos);
                                     fclose(arquivoVendas);
-                                    return;
+                                    return 1;
                                 }
                                 venda.produtos = temp;
                             }
@@ -1710,10 +1686,9 @@ void emitirNotaFiscal() {
 
     if (!vendaEncontrada) {
         printf("Venda não encontrada.\n");
-        return;
+        return 1;
     }
 
-    // Buscar dados do comprador
     Comprador comprador;
     bool compradorEncontrado = false;
     FILE *arquivoCompradores = fopen("dados_compradores.txt", "r");
@@ -1725,7 +1700,6 @@ void emitirNotaFiscal() {
                     compradorEncontrado = true;
                     comprador.codigo = codigo;
 
-                    // Ler os demais dados do comprador
                     while (fgets(linha, sizeof(linha), arquivoCompradores) && !strstr(linha, "Codigo:")) {
                         if (strstr(linha, "Nome:")) {
                             sscanf(linha, "Nome: %[^\n]", comprador.nome);
@@ -1763,10 +1737,9 @@ void emitirNotaFiscal() {
     if (!compradorEncontrado) {
         printf("Comprador da venda não encontrado.\n");
         free(venda.produtos);
-        return;
+        return 1;
     }
 
-    // Buscar dados do vendedor
     Vendedor vendedor;
     bool vendedorEncontrado = false;
     FILE *arquivoVendedores = fopen("vendedores.txt", "r");
@@ -1786,17 +1759,15 @@ void emitirNotaFiscal() {
     if (!vendedorEncontrado) {
         printf("Vendedor da venda não encontrado.\n");
         free(venda.produtos);
-        return;
+        return 1;
     }
 
-    // Criar array temporário para nomes dos produtos
     char **nomesProdutos = malloc(venda.quantidadeTotalProdutos * sizeof(char*));
     for (int i = 0; i < venda.quantidadeTotalProdutos; i++) {
         nomesProdutos[i] = malloc(50 * sizeof(char));
         strcpy(nomesProdutos[i], "Produto não encontrado");
     }
 
-    // Buscar nomes e estoque dos produtos
     int *estoqueProdutos = malloc(venda.quantidadeTotalProdutos * sizeof(int));
     for (int i = 0; i < venda.quantidadeTotalProdutos; i++) {
         FILE *arquivoProdutos = fopen("dados_produtos.txt", "r");
@@ -1806,7 +1777,6 @@ void emitirNotaFiscal() {
                 if (strstr(linha, "Codigo:")) {
                     if (sscanf(linha, "Codigo: %d", &produto.codigo) == 1 &&
                         produto.codigo == venda.produtos[i].codigoProduto) {
-                        // Volta para ler os dados completos do produto
                         fseek(arquivoProdutos, -strlen(linha), SEEK_CUR);
                         fscanf(arquivoProdutos, "Nome: %[^\n]\nCodigo: %d\nQuantidade: %d\nPreco: %f\n",
                                produto.nome, &produto.codigo, &produto.quantidadeEstoque, &produto.preco);
@@ -1820,7 +1790,6 @@ void emitirNotaFiscal() {
         }
     }
 
-    // Criar o arquivo da nota fiscal
     FILE *arquivoNota = fopen("nota_fiscal.txt", "w");
     if (!arquivoNota) {
         printf("Erro ao criar arquivo da nota fiscal.\n");
@@ -1830,16 +1799,14 @@ void emitirNotaFiscal() {
         free(nomesProdutos);
         free(estoqueProdutos);
         free(venda.produtos);
-        return;
+        return 1;
     }
 
-    // Cabeçalho da nota fiscal
     fprintf(arquivoNota, "=== NOTA FISCAL ===\n\n");
     fprintf(arquivoNota, "Número da Venda: %d\n", venda.numeroVenda);
     fprintf(arquivoNota, "Data: %s\n", venda.data);
     fprintf(arquivoNota, "Vendedor: %s (Nº %d)\n\n", vendedor.nome, venda.numeroVendedor);
 
-    // Dados do comprador
     fprintf(arquivoNota, "Dados do Comprador:\n");
     fprintf(arquivoNota, "Nome: %s\n", comprador.nome);
     fprintf(arquivoNota, "CPF: %s\n", comprador.cpf);
@@ -1849,7 +1816,6 @@ void emitirNotaFiscal() {
             comprador.endereco.cidade, comprador.endereco.estado,
             comprador.endereco.cep);
 
-    // Produtos
     fprintf(arquivoNota, "Produtos comprados:\n");
     fprintf(arquivoNota, "%-30s %5s %10s %10s\n", "Descrição", "Qtd", "Unitário", "Subtotal");
     fprintf(arquivoNota, "------------------------------------------------------------\n");
@@ -1865,7 +1831,6 @@ void emitirNotaFiscal() {
                 estoqueProdutos[i]);
     }
 
-    // Frete e total
     float frete = (venda.valorTotal > 300) ? 0 : (venda.valorTotal > 100) ? 20 : 30;
     fprintf(arquivoNota, "------------------------------------------------------------\n");
     fprintf(arquivoNota, "%-30s %15s\n", "Subtotal:", "R$");
@@ -1874,7 +1839,6 @@ void emitirNotaFiscal() {
 
     fclose(arquivoNota);
 
-    // Liberar memória
     for (int i = 0; i < venda.quantidadeTotalProdutos; i++) {
         free(nomesProdutos[i]);
     }
@@ -1882,7 +1846,6 @@ void emitirNotaFiscal() {
     free(estoqueProdutos);
     free(venda.produtos);
 
-    // Mostrar nota na tela
     printf("\n=== NOTA FISCAL GERADA ===\n");
     arquivoNota = fopen("nota_fiscal.txt", "r");
     if (arquivoNota) {
@@ -1892,17 +1855,14 @@ void emitirNotaFiscal() {
         fclose(arquivoNota);
     }
     printf("\nNota fiscal salva em 'nota_fiscal.txt'\n");
+    return 0;
 }
 
-void buscarNotaPorNumeroVenda() {
-    int numeroVenda;
-    printf("Digite o número da venda: ");
-    scanf("%d", &numeroVenda);
-
+int buscarNotaPorNumeroVenda(int numeroVenda) {
     FILE *arquivoNota = fopen("nota_fiscal.txt", "r");
     if (!arquivoNota) {
         printf("Erro ao abrir arquivo de notas fiscais.\n");
-        return;
+        return 1;
     }
 
     char linha[256];
@@ -1912,7 +1872,6 @@ void buscarNotaPorNumeroVenda() {
     printf("\n=== NOTA FISCAL ===\n");
 
     while (fgets(linha, sizeof(linha), arquivoNota)) {
-        // Verifica se é a nota procurada
         if (strstr(linha, "Número da Venda:")) {
             int num;
             if (sscanf(linha, "Número da Venda: %d", &num) == 1 && num == numeroVenda) {
@@ -1923,13 +1882,10 @@ void buscarNotaPorNumeroVenda() {
             }
         }
 
-        // Exibe o conteúdo se for a nota procurada
         if (exibir) {
-            // Remove quebra de linha se existir
             linha[strcspn(linha, "\n")] = '\0';
             printf("%s\n", linha);
 
-            // Para de exibir quando encontrar o fim da nota
             if (strstr(linha, "Total:")) {
                 break;
             }
@@ -1941,12 +1897,14 @@ void buscarNotaPorNumeroVenda() {
     }
 
     fclose(arquivoNota);
+    return 0;
 }
 /* * * * * * * * * * * * * * * * * * *
 *         Declarando Menus           *
 * * * * * * * * * * * * * * * * * * */
-void menuVendedores(){
+int menuVendedores(){
     int opcao;
+    int numero;
     do {
         printf("\n=== CRUD VENDEDORES ===\n");
         printf("1. Cadastrar\n2. Listar\n3. Alterar\n4. Excluir\n5. Voltando para o Menu Principal...\nEscolha: ");
@@ -1954,15 +1912,25 @@ void menuVendedores(){
         getchar();
 
         switch (opcao) {
-            case 1: cadastrarVendedor(); break;
+            case 1: obterDadosCompradores(); break;
             case 2: listarVendedores(); break;
-            case 3: alterarVendedor(); break;
-            case 4: excluirVendedor(); break;
+            case 3:
+                printf("Digite o numero do vendedor: ");
+                scanf("%d", &numero);
+                alterarVendedor(numero);
+                break;
+            case 4:
+             printf("Digite o numero do vendedor: ");
+             scanf("%d", &numero);
+             excluirVendedor(numero);
+             break;
         }
     } while (opcao != 5);
+    return 0;
 }
-void menuCompradores(){
+int menuCompradores(){
     int opcao = 0;
+    int numero;
     do {
         printf("-------------------------------------\n");
         printf("|          MENU COMPRADORES          |\n");
@@ -1976,16 +1944,20 @@ void menuCompradores(){
         scanf("%d",&opcao);
         switch (opcao) {
                 case 1:
-                    cadastrarCompradores();
+                    obterDadosCompradores();
                     break;
                 case 2:
                     consultarTodosCompradores();
                     break;
                 case 3:
-                    alterarProdutos();
+                    printf("Digite o numero do comprador: ");
+                    scanf("%d", &numero);
+                    alterarProdutos(numero);
                     break;
                 case 4:
-                    excluirComprador();
+                    printf("Digite o numero do comprador: ");
+                    scanf("%d", &numero);
+                    excluirComprador(numero);
                     break;
                 case 5:
                     printf("Voltar ao menu principal...\n");
@@ -1996,9 +1968,11 @@ void menuCompradores(){
 
         };
     }while (opcao != 5);
+    return 0;
 }
-void menuProdutos(){
+int menuProdutos(){
     int opcao = 0;
+    int codigo;
     do {
         printf("----------------------------------\n");
         printf("|         MENU PRODUTOS           |\n");
@@ -2014,19 +1988,25 @@ void menuProdutos(){
 
         switch (opcao) {
             case 1:
-                cadastrarProdutos();
+                obterDadosProdutos();
                 break;
             case 2:
-                consultarProdutoPorCodigo();
+                printf("Digite o codigo produto: ");
+                scanf("%d", &codigo);
+                consultarProdutoPorCodigo(codigo);
                 break;
             case 3:
                 consultarTodosProdutos();
                 break;
             case 4:
-                alterarProdutos();
+                printf("Digite o codigo produto: ");
+                scanf("%d", &codigo);
+                alterarProdutos(codigo);
                 break;
             case 5:
-                excluirProduto();
+                printf("Digite o codigo produto: ");
+                scanf("%d", &codigo);
+                excluirProduto(codigo);
                 break;
             case 6:
                 printf("Voltando ao menu principal...\n");
@@ -2036,10 +2016,11 @@ void menuProdutos(){
                 break;
         }
     } while (opcao != 6);
+    return 0;
 }
 
-void menuVendas(){
-    int opcao;
+int menuVendas(){
+    int opcao, numero;
     do {
         printf("\n=== CRUD VENDAS ===\n");
         printf("1. Cadastrar Venda\n2. Listar Vendas\n3. Alterar Venda\n4. Excluir Venda\n5. Voltando para o Menu Principal\nEscolha: ");
@@ -2047,12 +2028,21 @@ void menuVendas(){
         getchar();
 
         switch (opcao) {
-            case 1: cadastrarVenda(); break;
+            case 1: obterDadosVenda(); break;
             case 2: listarVendas(); break;
-            case 3: alterarVenda(); break;
-            case 4: excluirVenda(); break;
+            case 3:
+                printf("Digite o numero da venda: ");
+                scanf("%d", &numero);
+                alterarVenda(numero);
+                break;
+            case 4:
+                printf("Digite o numero da venda: ");
+                scanf("%d", &numero);
+                excluirVenda(numero);
+                break;
         }
     } while (opcao != 5);
+    return 0;
 }
 
 /* * * * * * * * * * * * * * * * * * *
@@ -2061,6 +2051,7 @@ void menuVendas(){
 
 int main(int argc, char **argv) {
     int opcao = 0;
+    int numero;
     do {
         printf("----------------------------------\n");
         printf("|         MENU PRINCIPAL         |\n");
@@ -2089,10 +2080,14 @@ int main(int argc, char **argv) {
                 menuVendas();
                 break;
             case 5:
-                emitirNotaFiscal();
+                printf("Digite o numero da venda: ");
+                scanf("%d", &numero);
+                emitirNotaFiscal(numero);
                 break;
             case 6:
-                buscarNotaPorNumeroVenda();
+                printf("Digite o numero da venda: ");
+                scanf("%d", &numero);
+                buscarNotaPorNumeroVenda(numero);
                 break;
             case 7:
                 printf("Encerrando o programa...\n");
