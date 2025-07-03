@@ -3,9 +3,6 @@
 * DESCRIPTION : implementa um sistema e-commerce, com ge-
 *               renciamento de produtos, vendas, compra-
 *               dores e vendedores.
-* PUBLIC FUNCTIONS :
-* [tipo_retorno] NomeFuncao1( argumentos )
-* [tipo_retorno] NomeFuncao2( argumentos )
 * NOTES :
 * Este sistema foi desenvolvido para fins acadêmicos das
 * disciplinas de Fundamentos da Engenharia de Software e
@@ -954,10 +951,10 @@ int consultarProdutoPorCodigo(int codigo){
         printf("Erro ao abrir o arquivo!\n");
         return 1;
     };
-    while (fscanf(arquivo, "Nome: %s\n", nome) == 1 &&
+   while (fscanf(arquivo, "Nome: %[^\n]\n", nome) == 1 &&
            fscanf(arquivo, "Codigo: %d\n", &codigoArquivo) == 1 &&
            fscanf(arquivo, "Quantidade: %d\n", &quantidade) == 1 &&
-           fscanf(arquivo, "Preco: %f\n", &preco) == 1 ){
+           fscanf(arquivo, "Preco: %f\n", &preco) == 1) {
 
         if (codigoArquivo == codigo) {
             printf("\nProduto encontrado!\n");
@@ -969,6 +966,7 @@ int consultarProdutoPorCodigo(int codigo){
             break;
         }
     }
+
     fclose(arquivo);
     if(produtoEncontrado == false){
       printf("Código %d não encontrado!\n", codigo);
